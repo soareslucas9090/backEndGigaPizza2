@@ -23,6 +23,12 @@ class InputsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class InputsSalablesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inputs_Salables
+        fields = "__all__"
+
+
 class SalablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Salables
@@ -31,33 +37,12 @@ class SalablesSerializer(serializers.ModelSerializer):
     subcategory = serializers.PrimaryKeyRelatedField(
         queryset=SubCategorys.objects.all()
     )
-    inputs = serializers.PrimaryKeyRelatedField(
-        queryset=Inputs.objects.all(), many=True
-    )
-
-
-class InputsSalablesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Inputs_Salables
-        fields = "__all__"
-
-    salable = serializers.PrimaryKeyRelatedField(queryset=Salables.objects.all())
-    inputs = serializers.PrimaryKeyRelatedField(queryset=Inputs.objects.all())
 
 
 class PizzasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pizzas
         fields = "__all__"
-
-
-class FlavorsPizzaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FlavorsPizza
-        fields = "__all__"
-
-    pizza = serializers.PrimaryKeyRelatedField(queryset=Pizzas.objects.all())
-    salable = serializers.PrimaryKeyRelatedField(queryset=Salables.objects.all())
 
 
 class AddressSerializer(serializers.ModelSerializer):

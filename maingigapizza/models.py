@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 
@@ -44,8 +44,7 @@ class Salables(models.Model):
     subcategory = models.ForeignKey(
         SubCategorys, on_delete=models.CASCADE, related_name="subcategory", null=False
     )
-    inputs = models.ManyToManyField(Inputs)
-    is_ativo = models.BooleanField(default=True, null=False)
+    is_active = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return f"{self.name}"
@@ -72,12 +71,13 @@ class Pizzas(models.Model):
     name = models.CharField(max_length=255, null=False)
     size = models.IntegerField(null=False)
     price = models.FloatField(null=False)
+    flavors = models.ManyToManyField(Salables, through="Flavors_Pizza")
 
     def __str__(self):
         return f"Pizza {self.name}"
 
 
-class FlavorsPizza(models.Model):
+class Flavors_Pizza(models.Model):
     pizza = models.ForeignKey(
         Pizzas, on_delete=models.RESTRICT, related_name="pizza", null=False
     )
@@ -95,6 +95,7 @@ class Address(models.Model):
     neighborhood = models.CharField(max_length=255, null=False)
     number = models.IntegerField(null=False)
     complent = models.CharField(max_length=255, null=False)
+    is_active = models.BooleanField(default=True, null=False)
 
 
 class UserManager(BaseUserManager):
