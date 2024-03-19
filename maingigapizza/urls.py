@@ -8,6 +8,7 @@ gigapizza_router.register("categorys", Categorys)
 gigapizza_router.register("subcategorys", SubCategorys)
 gigapizza_router.register("inputs", Inputs)
 gigapizza_router.register("salables", Salables)
+gigapizza_router.register("inputs_salables", InputsSalables)
 
 urlpatterns = [
     path("v1/", include(gigapizza_router.urls)),

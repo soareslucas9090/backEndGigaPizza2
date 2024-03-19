@@ -28,6 +28,9 @@ class InputsSalablesSerializer(serializers.ModelSerializer):
         model = Inputs_Salables
         fields = "__all__"
 
+    salable = serializers.PrimaryKeyRelatedField(queryset=Salables.objects.all())
+    input = serializers.PrimaryKeyRelatedField(queryset=Inputs.objects.all())
+
 
 class SalablesSerializer(serializers.ModelSerializer):
     class Meta:
