@@ -103,6 +103,35 @@ class Inputs(ModelViewSet):
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Regras de query_params
+        input_id = self.request.query_params.get("input_id")
+
+        if input_id and input_id.isnumeric():
+            return queryset.filter(id=input_id)
+
+        input_name = self.request.query_params.get("input")
+
+        if input_name:
+            return queryset.filter(name=input_name)
+
+        is_active_value = self.request.query_params.get("is_active")
+
+        if is_active_value:
+
+            if is_active_value.lower() == "false":
+                is_active_value = False
+                return queryset.filter(is_active=is_active_value)
+
+            elif is_active_value.lower() == "true":
+                is_active_value = True
+                return queryset.filter(is_active=is_active_value)
+        # Regras de query_params
+
+        return queryset
+
 
 class Salables(ModelViewSet):
     queryset = Salables.objects.all()
@@ -112,6 +141,40 @@ class Salables(ModelViewSet):
         AllowAny,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Regras de query_params
+        salable_id = self.request.query_params.get("salable_id")
+
+        if salable_id and salable_id.isnumeric():
+            return queryset.filter(id=salable_id)
+
+        salable_name = self.request.query_params.get("salable")
+
+        if salable_name:
+            return queryset.filter(name=salable_name)
+
+        is_active_value = self.request.query_params.get("is_active")
+
+        subcategory_id = self.request.query_params.get("subcategory_id")
+
+        if subcategory_id and subcategory_id.isnumeric():
+            return queryset.filter(id=subcategory_id)
+
+        if is_active_value:
+
+            if is_active_value.lower() == "false":
+                is_active_value = False
+                return queryset.filter(is_active=is_active_value)
+
+            elif is_active_value.lower() == "true":
+                is_active_value = True
+                return queryset.filter(is_active=is_active_value)
+        # Regras de query_params
+
+        return queryset
 
 
 class InputsSalables(ModelViewSet):
@@ -125,5 +188,10 @@ class InputsSalables(ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        print(self.request.query_params)
+
+        salable_id = self.request.query_params.get("salable_id")
+
+        if salable_id and salable_id.isnumeric():
+            return queryset.filter(id=salable_id)
+
         return queryset
