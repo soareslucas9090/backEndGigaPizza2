@@ -42,10 +42,40 @@ class SalablesSerializer(serializers.ModelSerializer):
     )
 
 
+class Flavors_PizzaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flavors_Pizza
+        fields = "__all__"
+
+
 class PizzasSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pizzas
         fields = "__all__"
+
+    flavors = serializers.PrimaryKeyRelatedField(
+        queryset=Salables.objects.all(), many=True, required=True
+    )
+    name = serializers.CharField(read_only=True)
+
+    def create(self, validated_data):
+        flavors = validated_data.pop("flavors", [])
+        names = ""
+
+        if len(flavors) == 1:
+            names = flavors[0]
+
+        if len(flavors) == 2:
+            names = f"{flavors[0]} + {flavors[1]}"
+
+        if len(flavors) == 3:
+            names = f"{flavors[0]} + {flavors[1]} + {flavors[2]}"
+
+        validated_data["name"] = names
+
+        pizza = Pizzas.objects.create(**validated_data)
+
+        return pizza
 
 
 class AddressSerializer(serializers.ModelSerializer):

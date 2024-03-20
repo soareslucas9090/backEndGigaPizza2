@@ -195,3 +195,13 @@ class InputsSalables(ModelViewSet):
             return queryset.filter(id=salable_id)
 
         return queryset
+
+
+class Pizzas(ModelViewSet):
+    queryset = Pizzas.objects.all()
+    serializer_class = PizzasSerializer
+    pagination_class = DefaultNumberPagination
+    permission_classes = [
+        AllowAny,
+    ]
+    http_method_names = ["get", "head", "patch", "delete", "post"]
