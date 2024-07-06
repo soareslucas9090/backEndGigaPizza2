@@ -3,6 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from .env import *
+from .spectacular_settings import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -160,16 +161,6 @@ REST_FRAMEWORK = {
     "TIME_INPUT_FORMATS": [
         "%H:%M",
     ],
-}
-
-SPECTACULAR_SETTINGS = {
-    "TITLE": "BackEndGigaPizza",
-    "DESCRIPTION": "",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-    "SWAGGER_UI_DIST": "SIDECAR",
-    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
-    "REDOC_DIST": "SIDECAR",
 }
 
 SIMPLE_JWT = {

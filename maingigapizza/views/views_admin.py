@@ -4,21 +4,21 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 
-from .models import *
-from .serializers import *
+from ..models import *
+from ..serializers import *
 
 
 class DefaultNumberPagination(PageNumberPagination):
     page_size = 10
 
 
-@extend_schema(tags=["Categorys"])
-class Categorys(ModelViewSet):
+@extend_schema(tags=["Admin.Categorys"])
+class CategorysViewSet(ModelViewSet):
     queryset = Categorys.objects.all()
     serializer_class = CategorysSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        AllowAny,
+        IsAuthenticatedOrReadOnly,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -52,13 +52,13 @@ class Categorys(ModelViewSet):
         return queryset
 
 
-@extend_schema(tags=["SubCategorys"])
-class SubCategorys(ModelViewSet):
+@extend_schema(tags=["Admin.SubCategorys"])
+class SubCategorysViewSet(ModelViewSet):
     queryset = SubCategorys.objects.select_related("category").all()
     serializer_class = SubCategorysSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        AllowAny,
+        IsAuthenticatedOrReadOnly,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -97,8 +97,8 @@ class SubCategorys(ModelViewSet):
         return queryset
 
 
-@extend_schema(tags=["Inputs"])
-class Inputs(ModelViewSet):
+@extend_schema(tags=["Admin.Inputs"])
+class InputsViewSet(ModelViewSet):
     queryset = Inputs.objects.all()
     serializer_class = InputsSerializer
     pagination_class = DefaultNumberPagination
@@ -137,8 +137,8 @@ class Inputs(ModelViewSet):
         return queryset
 
 
-@extend_schema(tags=["Salables"])
-class Salables(ModelViewSet):
+@extend_schema(tags=["Admin.Salables"])
+class SalablesViewSet(ModelViewSet):
     queryset = Salables.objects.all()
     serializer_class = SalablesSerializer
     pagination_class = DefaultNumberPagination
@@ -182,8 +182,8 @@ class Salables(ModelViewSet):
         return queryset
 
 
-@extend_schema(tags=["InputsSalables"])
-class InputsSalables(ModelViewSet):
+@extend_schema(tags=["Admin.InputsSalables"])
+class InputsSalablesViewSet(ModelViewSet):
     queryset = Inputs_Salables.objects.all()
     serializer_class = InputsSalablesSerializer
     pagination_class = DefaultNumberPagination
@@ -203,8 +203,8 @@ class InputsSalables(ModelViewSet):
         return queryset
 
 
-@extend_schema(tags=["Pizzas"])
-class Pizzas(ModelViewSet):
+@extend_schema(tags=["Admin.Pizzas"])
+class PizzasViewSet(ModelViewSet):
     queryset = Pizzas.objects.all()
     serializer_class = PizzasSerializer
     pagination_class = DefaultNumberPagination
