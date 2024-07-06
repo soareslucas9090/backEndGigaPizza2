@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from drf_spectacular.utils import extend_schema
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
@@ -11,6 +12,7 @@ class DefaultNumberPagination(PageNumberPagination):
     page_size = 10
 
 
+@extend_schema(tags=["Categorys"])
 class Categorys(ModelViewSet):
     queryset = Categorys.objects.all()
     serializer_class = CategorysSerializer
@@ -50,6 +52,7 @@ class Categorys(ModelViewSet):
         return queryset
 
 
+@extend_schema(tags=["SubCategorys"])
 class SubCategorys(ModelViewSet):
     queryset = SubCategorys.objects.select_related("category").all()
     serializer_class = SubCategorysSerializer
@@ -94,6 +97,7 @@ class SubCategorys(ModelViewSet):
         return queryset
 
 
+@extend_schema(tags=["Inputs"])
 class Inputs(ModelViewSet):
     queryset = Inputs.objects.all()
     serializer_class = InputsSerializer
@@ -133,6 +137,7 @@ class Inputs(ModelViewSet):
         return queryset
 
 
+@extend_schema(tags=["Salables"])
 class Salables(ModelViewSet):
     queryset = Salables.objects.all()
     serializer_class = SalablesSerializer
@@ -177,6 +182,7 @@ class Salables(ModelViewSet):
         return queryset
 
 
+@extend_schema(tags=["InputsSalables"])
 class InputsSalables(ModelViewSet):
     queryset = Inputs_Salables.objects.all()
     serializer_class = InputsSalablesSerializer
@@ -197,6 +203,7 @@ class InputsSalables(ModelViewSet):
         return queryset
 
 
+@extend_schema(tags=["Pizzas"])
 class Pizzas(ModelViewSet):
     queryset = Pizzas.objects.all()
     serializer_class = PizzasSerializer

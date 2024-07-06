@@ -1,6 +1,11 @@
 from datetime import datetime
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    Permission,
+    PermissionsMixin,
+)
 from django.db import models
 
 
@@ -45,6 +50,9 @@ class Salables(models.Model):
         SubCategorys, on_delete=models.CASCADE, related_name="subcategory", null=False
     )
     is_active = models.BooleanField(default=True, null=False)
+    inputs = models.ManyToManyField(
+        "Inputs", through="Inputs_Salables", related_name="salables"
+    )
 
     def __str__(self):
         return f"{self.name}"
@@ -71,13 +79,13 @@ class Pizzas(models.Model):
     name = models.CharField(max_length=255, null=False)
     size = models.IntegerField(null=False)
     price = models.FloatField(null=False)
-    flavors = models.ManyToManyField(Salables, through="Flavors_Pizza")
+    flavors = models.ManyToManyField(Salables, through="Flavors_Pizzas")
 
     def __str__(self):
         return f"Pizza {self.name}"
 
 
-class Flavors_Pizza(models.Model):
+class Flavors_Pizzas(models.Model):
     pizza = models.ForeignKey(
         Pizzas, on_delete=models.RESTRICT, related_name="pizza", null=False
     )
@@ -104,6 +112,7 @@ class UserManager(BaseUserManager):
         name,
         email,
         password=None,
+        **extra_fields,
     ):
         if not email:
             raise ValueError("User must have an email address")
@@ -111,8 +120,9 @@ class UserManager(BaseUserManager):
             raise ValueError("User must have a name")
 
         user = self.model(
+            email=self.normalize_email(email),
             name=name,
-            email=email,
+            **extra_fields,
         )
 
         user.set_password(password)
@@ -123,26 +133,31 @@ class UserManager(BaseUserManager):
         self,
         name,
         email,
-        password,
+        password=None,
+        **extra_fields,
     ):
         user = self.create_user(
             name=name,
             email=self.normalize_email(email),
             password=password,
+            **extra_fields,
         )
+
+        permissions = Permission.objects.all()
+        user.user_permissions.set(permissions)
 
         user.is_admin = True
         user.is_superuser = True
-        user.save(using=self._db)
+
         return user
 
 
-class Users(AbstractBaseUser):
+class Users(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255, null=False)
     cpf = models.CharField(max_length=11, null=False, unique=True)
     tel = models.CharField(max_length=11, null=False)
     address = models.ForeignKey(
-        Address, on_delete=models.CASCADE, related_name="address", null=False
+        Address, on_delete=models.CASCADE, related_name="address", null=True
     )
     email = models.EmailField(null=False, unique=True)
     password = models.CharField(max_length=512, null=False)
@@ -165,6 +180,11 @@ class Users(AbstractBaseUser):
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.lower()
+
+        super().save(*args, **kwargs)
 
 
 class Orders(models.Model):

@@ -26,25 +26,70 @@ class InputsSerializer(serializers.ModelSerializer):
 class InputsSalablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inputs_Salables
-        fields = "__all__"
+        fields = ["input", "input_name", "quantity"]
 
-    salable = serializers.PrimaryKeyRelatedField(queryset=Salables.objects.all())
+    input_name = serializers.CharField(source="input.name", read_only=True)
     input = serializers.PrimaryKeyRelatedField(queryset=Inputs.objects.all())
 
 
 class SalablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Salables
-        fields = "__all__"
+        fields = [
+            "id",
+            "name",
+            "description",
+            "price",
+            "subcategory",
+            "is_active",
+            "inputs",
+        ]
 
+    inputs = InputsSalablesSerializer(many=True)
     subcategory = serializers.PrimaryKeyRelatedField(
         queryset=SubCategorys.objects.all()
     )
 
+    def create(self, validated_data):
+        inputs_data = validated_data.pop("inputs")
+        salable = Salables.objects.create(**validated_data)
+
+        for input_data in inputs_data:
+            Inputs_Salables.objects.create(
+                salable=salable,
+                input=input_data["input"],
+                quantity=input_data["quantity"],
+            )
+
+        return salable
+
+    def update(self, instance, validated_data):
+        inputs_data = validated_data.pop("inputs")
+
+        instance.name = validated_data.get("name", instance.name)
+        instance.description = validated_data.get("description", instance.description)
+        instance.price = validated_data.get("price", instance.price)
+        instance.subcategory = validated_data.get("subcategory", instance.subcategory)
+        instance.is_active = validated_data.get("is_active", instance.is_active)
+        instance.save()
+
+        # Delete existing inputs
+        instance.inputs.clear()
+
+        # Add new inputs
+        for input_data in inputs_data:
+            Inputs_Salables.objects.create(
+                salable=instance,
+                input_id=input_data["input"]["id"],
+                quantity=input_data["quantity"],
+            )
+
+        return instance
+
 
 class Flavors_PizzaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Flavors_Pizza
+        model = Flavors_Pizzas
         fields = "__all__"
 
 
