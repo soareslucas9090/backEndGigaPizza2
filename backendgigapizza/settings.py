@@ -23,7 +23,6 @@ if SECRET_KEY:
             "PORT": os.environ.get("bdPort"),
         }
     }
-    INTERNAL_IPS = internalIPs
     signingKey = os.environ.get("secretKeyJWT")
 
 else:
@@ -42,7 +41,6 @@ else:
             "PORT": bdPort,
         }
     }
-    INTERNAL_IPS = internalIPs
     signingKey = secretKeyJWT
 
 INTERNAL_IPS = [
