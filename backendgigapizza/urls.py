@@ -1,19 +1,16 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
 
 from .views_jwt import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
+    path("", RedirectView.as_view(url="/api/schema/swagger/", permanent=True)),
     path("admin/", admin.site.urls),
     path("api/maingigapizza/", include("maingigapizza.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

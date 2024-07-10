@@ -6,7 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from ..models import Salables, Users
 from ..permissions import IsAnonymousUser
-from ..serializers.serializers_public import SalablesSerializer, UsersSerializer
+from ..serializers.serializers_public import SalablesPublicSerializer, UsersSerializer
 
 
 class ListItensNumberPagination(PageNumberPagination):
@@ -26,7 +26,7 @@ class CreateUserViewSet(GenericViewSet, CreateModelMixin):
 @extend_schema(tags=["Public.Salables"])
 class ListSalablesViewSet(GenericViewSet, ListModelMixin):
     queryset = Salables.objects.all()
-    serializer_class = SalablesSerializer
+    serializer_class = SalablesPublicSerializer
     pagination_class = ListItensNumberPagination
     permission_classes = [
         AllowAny,

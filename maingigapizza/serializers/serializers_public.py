@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from ..models import Inputs_Salables, Salables, Users
@@ -6,7 +7,15 @@ from ..models import Inputs_Salables, Salables, Users
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        exclude = ["last_login", "address", "is_admin", "is_active"]
+        exclude = [
+            "last_login",
+            "address",
+            "is_admin",
+            "is_active",
+            "is_superuser",
+            "groups",
+            "user_permissions",
+        ]
 
     def validate_password(self, value):
         password = value
@@ -17,7 +26,7 @@ class UsersSerializer(serializers.ModelSerializer):
         return password
 
 
-class SalablesSerializer(serializers.ModelSerializer):
+class SalablesPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Salables
         fields = [
@@ -31,12 +40,14 @@ class SalablesSerializer(serializers.ModelSerializer):
     subcategory = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
 
+    @extend_schema_field(serializers.CharField)
     def get_subcategory(self, obj):
         try:
             return obj.subcategory.name
         except:
             return None
 
+    @extend_schema_field(serializers.CharField)
     def get_category(self, obj):
         try:
             return obj.subcategory.category.name
