@@ -35,7 +35,7 @@ class CategorysViewSet(ModelViewSet):
         category_name = self.request.query_params.get("category")
 
         if category_name:
-            return queryset.filter(name=category_name)
+            return queryset.filter(name__icontains=category_name)
 
         is_active_value = self.request.query_params.get("is_active")
 
@@ -52,6 +52,34 @@ class CategorysViewSet(ModelViewSet):
 
         return queryset
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="category_id",
+                type=OpenApiTypes.INT,
+                description="Filter by category id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="category",
+                type=OpenApiTypes.STR,
+                description="Filter by category name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                description="Filter by active state",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 @extend_schema(tags=["Admin.SubCategorys"])
 class SubCategorysViewSet(ModelViewSet):
@@ -59,7 +87,7 @@ class SubCategorysViewSet(ModelViewSet):
     serializer_class = SubCategorysSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        IsAdmin,
+        IsAnonymousUser,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -75,7 +103,7 @@ class SubCategorysViewSet(ModelViewSet):
         subcategory_name = self.request.query_params.get("subcategory")
 
         if subcategory_name:
-            return queryset.filter(name=subcategory_name)
+            return queryset.filter(name__icontains=subcategory_name)
 
         category_id = self.request.query_params.get("category_id")
 
@@ -96,6 +124,41 @@ class SubCategorysViewSet(ModelViewSet):
         # Regras de query_params
 
         return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="subcategory_id",
+                type=OpenApiTypes.INT,
+                description="Filter by subcategory id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="subcategory",
+                type=OpenApiTypes.STR,
+                description="Filter by subcategory name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="category_id",
+                type=OpenApiTypes.INT,
+                description="Filter by category id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                description="Filter by active state",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 @extend_schema(tags=["Admin.Inputs"])
@@ -120,7 +183,7 @@ class InputsViewSet(ModelViewSet):
         input_name = self.request.query_params.get("input")
 
         if input_name:
-            return queryset.filter(name=input_name)
+            return queryset.filter(name__icontains=input_name)
 
         is_active_value = self.request.query_params.get("is_active")
 
@@ -136,6 +199,34 @@ class InputsViewSet(ModelViewSet):
         # Regras de query_params
 
         return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="input_id",
+                type=OpenApiTypes.INT,
+                description="Filter by input id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="input",
+                type=OpenApiTypes.STR,
+                description="Filter by input name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                description="Filter by active state",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     @extend_schema(
         examples=[
@@ -183,7 +274,7 @@ class SalablesViewSet(ModelViewSet):
         salable_name = self.request.query_params.get("salable")
 
         if salable_name:
-            return queryset.filter(name=salable_name)
+            return queryset.filter(name__icontains=salable_name)
 
         is_active_value = self.request.query_params.get("is_active")
 
@@ -205,6 +296,41 @@ class SalablesViewSet(ModelViewSet):
 
         return queryset
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="salable_id",
+                type=OpenApiTypes.INT,
+                description="Filter by salable id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="salable",
+                type=OpenApiTypes.STR,
+                description="Filter by salable name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="subcategory_id",
+                type=OpenApiTypes.INT,
+                description="Filter by subcategory id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                description="Filter by active state",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 @extend_schema(tags=["Admin.InputsSalables"])
 class InputsSalablesViewSet(ModelViewSet):
@@ -224,4 +350,54 @@ class InputsSalablesViewSet(ModelViewSet):
         if salable_id and salable_id.isnumeric():
             return queryset.filter(id=salable_id)
 
+        salable_name = self.request.query_params.get("salable")
+
+        if salable_name:
+            return queryset.filter(name__icontains=salable_name)
+
+        input_id = self.request.query_params.get("input_id")
+
+        if input_id and input_id.isnumeric():
+            return queryset.filter(id=input_id)
+
+        input_name = self.request.query_params.get("input")
+
+        if input_name:
+            return queryset.filter(name__icontains=input_name)
+
         return queryset
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="salable_id",
+                type=OpenApiTypes.INT,
+                description="Filter by salable id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="salable",
+                type=OpenApiTypes.STR,
+                description="Filter by salable name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="input_id",
+                type=OpenApiTypes.INT,
+                description="Filter by input id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="input",
+                type=OpenApiTypes.STR,
+                description="Filter by input name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
