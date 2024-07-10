@@ -164,8 +164,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(minutes=240),
     "BLACKLIST_AFTER_ROTATION": False,
     "SIGNING_KEY": signingKey,
     "AUTH_HEADER_TYPES": ("Bearer",),
