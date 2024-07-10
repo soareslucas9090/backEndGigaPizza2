@@ -1,6 +1,12 @@
 
 # BackEnd - GigaPizza
 
+<img align="center" alt="Python" width="30" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"><span>&nbsp;&nbsp;&nbsp;</span>
+<img align="center" alt="Django" width="30" src="https://cdn.worldvectorlogo.com/logos/django.svg"><span>&nbsp;&nbsp;&nbsp;</span>
+<img align="center" alt="Django Rest Framework" height="40" src="https://i.imgur.com/dcVFAeV.png"><span>&nbsp;&nbsp;&nbsp;</span>
+<img align="center" alt="PostgreSQL" width="36" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg"><span>&nbsp;&nbsp;&nbsp;</span>
+
+#
 Oi, tudo bem?
 Este é um projeto para futura implantação de um sistema de cardápio online e gerenciamento de pedidos e etoque de produtos.
 O foco é a criação de uma API em Django e Django Rest Framework para todo o gerenciamento de um restaurante, com foco específico em Pizzarias, mas com nível de abstração suficiente para permitir qualquer tipo de restaurantes e itens.
