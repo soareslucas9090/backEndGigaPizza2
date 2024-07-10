@@ -7,7 +7,7 @@ class IsAdminToDocumentation(permissions.BasePermission):
     def has_permission(self, request, view):
         if isinstance(request.user, AnonymousUser):
             return False
-        return not request.user.name == "admin2documentation"
+        return request.user.name == "admin2documentation"
 
 
 class IsAdmin(permissions.BasePermission):

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 
@@ -82,9 +83,10 @@ class CategorysViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.request.method in ["PATCH", "DELETE", "POST"]:
-            return [
-                IsAdminToDocumentation(),
-            ]
+            permission = IsAdminToDocumentation()
+            if permission.has_permission(self.request, self):
+                raise PermissionDenied()
+
         return super().get_permissions()
 
 
@@ -166,6 +168,14 @@ class SubCategorysViewSet(ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    def get_permissions(self):
+        if self.request.method in ["PATCH", "DELETE", "POST"]:
+            permission = IsAdminToDocumentation()
+            if permission.has_permission(self.request, self):
+                raise PermissionDenied()
+
+        return super().get_permissions()
 
 
 @extend_schema(tags=["Admin.Inputs"])
@@ -258,6 +268,14 @@ class InputsViewSet(ModelViewSet):
         """
         return super().create(request, *args, **kwargs)
 
+    def get_permissions(self):
+        if self.request.method in ["PATCH", "DELETE", "POST"]:
+            permission = IsAdminToDocumentation()
+            if permission.has_permission(self.request, self):
+                raise PermissionDenied()
+
+        return super().get_permissions()
+
 
 @extend_schema(tags=["Admin.Salables"])
 class SalablesViewSet(ModelViewSet):
@@ -338,6 +356,14 @@ class SalablesViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    def get_permissions(self):
+        if self.request.method in ["PATCH", "DELETE", "POST"]:
+            permission = IsAdminToDocumentation()
+            if permission.has_permission(self.request, self):
+                raise PermissionDenied()
+
+        return super().get_permissions()
+
 
 @extend_schema(tags=["Admin.InputsSalables"])
 class InputsSalablesViewSet(ModelViewSet):
@@ -408,3 +434,11 @@ class InputsSalablesViewSet(ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    def get_permissions(self):
+        if self.request.method in ["PATCH", "DELETE", "POST"]:
+            permission = IsAdminToDocumentation()
+            if permission.has_permission(self.request, self):
+                raise PermissionDenied()
+
+        return super().get_permissions()
