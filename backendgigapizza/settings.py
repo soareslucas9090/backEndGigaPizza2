@@ -43,7 +43,7 @@ else:
 
 INTERNAL_IPS = [
     "127.0.0.1",
-    "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+    "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com/",
 ]
 
 CORS_ORIGIN_WHITELIST = [
