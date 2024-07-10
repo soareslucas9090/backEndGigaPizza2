@@ -1,3 +1,4 @@
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema_field
 from rest_framework import serializers
 
 from ..models import Categorys, Inputs, Inputs_Salables, Salables, SubCategorys
@@ -21,6 +22,10 @@ class InputsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inputs
         fields = "__all__"
+
+    subcategory = serializers.PrimaryKeyRelatedField(
+        queryset=SubCategorys.objects.all()
+    )
 
     def validate_unit(self, value):
         allowed_units = dict(Inputs.UNITS).keys()

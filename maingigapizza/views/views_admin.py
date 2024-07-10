@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiExample, extend_schema
+from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Categorys, Inputs, Pizzas, Salables, SubCategorys
-from ..permissions import IsAdmin
+from ..models import Categorys, Inputs, Salables, SubCategorys
+from ..permissions import IsAdmin, IsAnonymousUser
 from ..serializers.serializers_admin import *
 
 
@@ -103,7 +104,7 @@ class InputsViewSet(ModelViewSet):
     serializer_class = InputsSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        IsAdmin,
+        IsAnonymousUser,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -135,6 +136,29 @@ class InputsViewSet(ModelViewSet):
         # Regras de query_params
 
         return queryset
+
+    @extend_schema(
+        examples=[
+            OpenApiExample(
+                "Valid request example",
+                summary='Example of request with valid "unit" field.',
+                value={
+                    "name": "string",
+                    "price": 1.1,
+                    "quantity": 1.1,
+                    "unit": "kg, or g, or mg, or l, or ml, or und",
+                    "subcategory": 0,
+                },
+                request_only=True,
+            ),
+        ],
+    )
+    def create(self, request, *args, **kwargs):
+        """
+        Valid values ​​for unit:
+            kg; g; mg; l; ml; und
+        """
+        return super().create(request, *args, **kwargs)
 
 
 @extend_schema(tags=["Admin.Salables"])

@@ -1,6 +1,15 @@
 from rest_framework import serializers
 
-from ..models import Flavors_Pizza, OrderItens, OrderPizzas, Orders, Pizzas
+from ..models import (
+    Address,
+    Flavors_Pizzas,
+    OrderItens,
+    OrderPizzas,
+    Orders,
+    Pizzas,
+    Salables,
+    Users,
+)
 
 
 class Flavors_PizzaSerializer(serializers.ModelSerializer):

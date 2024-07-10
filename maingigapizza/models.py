@@ -35,6 +35,7 @@ class Inputs(models.Model):
     UNITS = [
         ("kg", "Kilo"),
         ("g", "Gram"),
+        ("mg", "Miligram"),
         ("l", "Liter"),
         ("ml", "Mililiter"),
         ("und", "Unit"),
@@ -43,7 +44,13 @@ class Inputs(models.Model):
     name = models.CharField(max_length=255, unique=True)
     price = models.FloatField(null=False)
     quantity = models.FloatField(null=False)
-    unit = models.CharField(max_length=3, choices=UNITS, null=False)
+    unit = models.CharField(max_length=3, null=False)
+    subcategory = models.ForeignKey(
+        SubCategorys,
+        on_delete=models.CASCADE,
+        related_name="_inputs_subcategory",
+        null=False,
+    )
     is_active = models.BooleanField(default=True, null=False)
 
     def __str__(self):
