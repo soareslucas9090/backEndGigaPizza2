@@ -2,9 +2,11 @@ from pathlib import Path
 
 from django.shortcuts import render
 from drf_spectacular.utils import extend_schema
+from rest_framework import status
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from ..models import Salables, Users
@@ -38,5 +40,7 @@ class ListSalablesViewSet(GenericViewSet, ListModelMixin):
 
     def list(self, request, *args, **kwargs):
         print("===== Aqui")
-        print(Path(__file__).resolve().parent.parent.parent)
-        return super().list(request, *args, **kwargs)
+        dir = Path(__file__).resolve().parent.parent.parent
+        serializer = self.get_serializer(self.get_queryset(), many=True)
+        retorno = {"teste": f"{dir}"}
+        return Response(retorno, status=status.HTTP_200_OK)
