@@ -50,7 +50,7 @@ Por consequência, documentação online pode ser acessada em <https://web-72ljj
 
 ## Acesso
 
-Na minha instância online de banco já foi mockado alguns usuários, sendo eles:
+Na instância online da aplicação foi mockado um usuário para que seja possível fazer o um *GET* em todas as rotas do sistema:
 
 |  Usuário          |Login                            |Senha        |Observação        |
 |-------------------|---------------------------------|-------------|------------------|
