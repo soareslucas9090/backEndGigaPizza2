@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -23,7 +24,9 @@ class UsersSerializer(serializers.ModelSerializer):
         if len(password) < 8:
             raise serializers.ValidationError("Must have at least 8 chars.")
 
-        return password
+        password256 = make_password(password=password)
+
+        return password256
 
 
 class SalablesPublicSerializer(serializers.ModelSerializer):

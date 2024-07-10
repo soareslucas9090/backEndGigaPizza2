@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ModelViewSet
 
 from ..models import Categorys, Inputs, Salables, SubCategorys
-from ..permissions import IsAdmin, IsAnonymousUser
+from ..permissions import IsAdmin, IsAdminToDocumentation, IsAnonymousUser
 from ..serializers.serializers_admin import *
 
 
@@ -79,6 +79,13 @@ class CategorysViewSet(ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+    def get_permissions(self):
+        if self.request.method in ["PATCH", "DELETE", "POST"]:
+            return [
+                IsAdminToDocumentation(),
+            ]
+        return super().get_permissions()
 
 
 @extend_schema(tags=["Admin.SubCategorys"])
