@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from drf_spectacular.utils import extend_schema
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import *
-from ..serializers import *
+from ..models import Categorys, Inputs, Pizzas, Salables, SubCategorys
+from ..permissions import IsAdmin
+from ..serializers.serializers_admin import *
 
 
 class DefaultNumberPagination(PageNumberPagination):
@@ -18,7 +18,7 @@ class CategorysViewSet(ModelViewSet):
     serializer_class = CategorysSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        IsAuthenticatedOrReadOnly,
+        IsAdmin,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -58,7 +58,7 @@ class SubCategorysViewSet(ModelViewSet):
     serializer_class = SubCategorysSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        IsAuthenticatedOrReadOnly,
+        IsAdmin,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -103,7 +103,7 @@ class InputsViewSet(ModelViewSet):
     serializer_class = InputsSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        AllowAny,
+        IsAdmin,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -143,7 +143,7 @@ class SalablesViewSet(ModelViewSet):
     serializer_class = SalablesSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        AllowAny,
+        IsAdmin,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -188,7 +188,7 @@ class InputsSalablesViewSet(ModelViewSet):
     serializer_class = InputsSalablesSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        AllowAny,
+        IsAdmin,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
@@ -201,14 +201,3 @@ class InputsSalablesViewSet(ModelViewSet):
             return queryset.filter(id=salable_id)
 
         return queryset
-
-
-@extend_schema(tags=["Admin.Pizzas"])
-class PizzasViewSet(ModelViewSet):
-    queryset = Pizzas.objects.all()
-    serializer_class = PizzasSerializer
-    pagination_class = DefaultNumberPagination
-    permission_classes = [
-        AllowAny,
-    ]
-    http_method_names = ["get", "head", "patch", "delete", "post"]

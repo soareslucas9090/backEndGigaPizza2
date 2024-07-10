@@ -32,10 +32,18 @@ class SubCategorys(models.Model):
 
 
 class Inputs(models.Model):
+    UNITS = [
+        ("kg", "Kilo"),
+        ("g", "Gram"),
+        ("l", "Liter"),
+        ("ml", "Mililiter"),
+        ("und", "Unit"),
+    ]
+
     name = models.CharField(max_length=255, unique=True)
     price = models.FloatField(null=False)
     quantity = models.FloatField(null=False)
-    unit = models.CharField(max_length=255, null=False)
+    unit = models.CharField(max_length=3, choices=UNITS, null=False)
     is_active = models.BooleanField(default=True, null=False)
 
     def __str__(self):
@@ -50,25 +58,14 @@ class Salables(models.Model):
         SubCategorys, on_delete=models.CASCADE, related_name="subcategory", null=False
     )
     is_active = models.BooleanField(default=True, null=False)
-    inputs = models.ManyToManyField(
-        "Inputs", through="Inputs_Salables", related_name="salables"
-    )
 
     def __str__(self):
         return f"{self.name}"
 
 
 class Inputs_Salables(models.Model):
-    salable = models.ForeignKey(
-        Salables,
-        on_delete=models.RESTRICT,
-        related_name="salable",
-    )
-    input = models.ForeignKey(
-        Inputs,
-        on_delete=models.RESTRICT,
-        related_name="inputs",
-    )
+    salable = models.ForeignKey(Salables, on_delete=models.RESTRICT)
+    input = models.ForeignKey(Inputs, on_delete=models.RESTRICT)
     quantity = models.FloatField(null=False)
 
     def __str__(self):
@@ -140,14 +137,13 @@ class UserManager(BaseUserManager):
             name=name,
             email=self.normalize_email(email),
             password=password,
+            is_admin=True,
+            is_superuser=True,
             **extra_fields,
         )
 
         permissions = Permission.objects.all()
         user.user_permissions.set(permissions)
-
-        user.is_admin = True
-        user.is_superuser = True
 
         return user
 
@@ -155,7 +151,7 @@ class UserManager(BaseUserManager):
 class Users(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255, null=False)
     cpf = models.CharField(max_length=11, null=False, unique=True)
-    tel = models.CharField(max_length=11, null=False)
+    tel = models.CharField(max_length=11, null=False, unique=True)
     address = models.ForeignKey(
         Address, on_delete=models.CASCADE, related_name="address", null=True
     )

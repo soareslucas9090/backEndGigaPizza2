@@ -33,6 +33,10 @@ SPECTACULAR_SETTINGS = {
             "name": "Admin.Users",
             "description": "Users related endpoints to admin users",
         },
+        {
+            "name": "Public.Users",
+            "description": "Users related endpoints to anonymous users",
+        },
     ],
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
