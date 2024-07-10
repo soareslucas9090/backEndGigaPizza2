@@ -46,6 +46,37 @@ else:
     INTERNAL_IPS = internalIPs
     signingKey = secretKeyJWT
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+]
+
+CORS_ORIGIN_WHITELIST = [
+    "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+    "https://cloud.seenode.com",
+    "http://127.0.0.1",
+    "https://127.0.0.1",
+]
+
+CORS_ALLOWED_HOSTS = [
+    "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+    "https://cloud.seenode.com",
+    "http://127.0.0.1",
+    "https://127.0.0.1",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com",
+    "https://cloud.seenode.com",
+    "http://127.0.0.1",
+    "https://127.0.0.1",
+]
+
+CORS_ALLOW_ALL_ORIGINS: True
+
+CORS_ALLOW_METHODS = ["*"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -54,6 +85,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
@@ -71,6 +103,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 DEBUG_TOOLBAR_PANELS = [
@@ -90,10 +124,6 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 ROOT_URLCONF = "backendgigapizza.urls"
-
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
 
 TEMPLATES = [
     {
