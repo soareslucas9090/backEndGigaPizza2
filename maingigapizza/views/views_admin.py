@@ -104,7 +104,7 @@ class InputsViewSet(ModelViewSet):
     serializer_class = InputsSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
-        IsAnonymousUser,
+        IsAdmin,
     ]
     http_method_names = ["get", "head", "patch", "delete", "post"]
 

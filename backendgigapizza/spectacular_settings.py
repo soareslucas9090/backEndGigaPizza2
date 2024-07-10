@@ -26,16 +26,12 @@ SPECTACULAR_SETTINGS = {
             "description": "Inputs_Salables related endpoints to admin users",
         },
         {
-            "name": "Admin.Pizzas",
-            "description": "Pizzas related endpoints to admin users",
+            "name": "Public.Create Users",
+            "description": "Endpoints used to create a user, from an anonymous user",
         },
         {
-            "name": "Admin.Users",
-            "description": "Users related endpoints to admin users",
-        },
-        {
-            "name": "Public.Users",
-            "description": "Users related endpoints to anonymous users",
+            "name": "Public.Salables",
+            "description": "Salables related endpoints to any users",
         },
     ],
     "SWAGGER_UI_DIST": "SIDECAR",
