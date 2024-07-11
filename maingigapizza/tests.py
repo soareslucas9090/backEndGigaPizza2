@@ -45,6 +45,96 @@ class AdminRoutersAPITestCase(APITestCase):
 
     #####################################################
     #####################################################
+    ################ AdminToDocumentation ###############
+    #####################################################
+    #####################################################
+
+    def test_permissions_adminToDocumentation(self):
+        # Limpando as credenciais anteriores
+        self.client.credentials()
+
+        # Criação do usuário Admin para documentação
+        admin2documentation_data = {
+            "name": "admin2documentation",
+            "email": "admin2documentation@gigapizza.com",
+            "cpf": "11122233344",
+            "tel": "1111111111",
+            "password": "documentation",
+        }
+        create_user_url = reverse("public-create_user-list")
+        response = self.client.post(
+            create_user_url, admin2documentation_data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Tranformação de usuário em Admin para os testes posteriores
+        admin2documentation = Users.objects.get(
+            email="admin2documentation@gigapizza.com"
+        )
+        admin2documentation.is_admin = True
+        admin2documentation.save()
+
+        # Obtenção de token jwt do usuário admin para documentação para autenticação nos testes posteriores
+        login_url = reverse("token_obtain_pair")
+        login_data = {
+            "email": "admin2documentation@gigapizza.com",
+            "password": "documentation",
+        }
+        login_response = self.client.post(login_url, login_data, format="json")
+        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+
+        # Autenticação de usuário com o response obtido
+        self.access_token = login_response.data["access"]
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token)
+
+        # Mapeamento das urls da categoria Admin
+        category_url = reverse("admin-categorys-list")
+        subcategory_url = reverse("admin-subcategorys-list")
+        input_url = reverse("admin-inputs-list")
+        salable_url = reverse("admin-salables-list")
+        input_salable_url = reverse("admin-inputs_salables-list")
+
+        # Testes em Admin.Category
+        response = self.client.get(category_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(category_url, {"test dict": "test"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Testes em Admin.Subcategory
+        response = self.client.get(subcategory_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(
+            subcategory_url, {"test dict": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Testes em Admin.Inputs
+        response = self.client.get(input_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(input_url, {"test dict": "test"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Testes em Admin.Salables
+        response = self.client.get(salable_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(salable_url, {"test dict": "test"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # Testes em Admin.Inputs_Salables
+        response = self.client.get(input_salable_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(
+            input_salable_url, {"test dict": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    #####################################################
+    #####################################################
     ################## Admin.Categorys ##################
     #####################################################
     #####################################################
