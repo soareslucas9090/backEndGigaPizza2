@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from maingigapizza.models import Categorys, Users
+from maingigapizza.models import Categorys, Inputs, Salables, SubCategorys, Users
 
 
 class AdminRoutersAPITestCase(APITestCase):
@@ -105,4 +105,79 @@ class AdminRoutersAPITestCase(APITestCase):
         # Teste de exclusão de um registro
         category_url = reverse("admin-categorys-detail", kwargs={"pk": 1})
         response = self.client.delete(category_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    #####################################################
+    #####################################################
+    ################# Admin.Subcategorys ################
+    #####################################################
+    #####################################################
+
+    def test_create_subcategory(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Dados da nova subcategoria
+        subcategory_url = reverse("admin-subcategorys-list")
+        subcategory_data = {"name": "New Subcategory", "category": category.id}
+
+        # Teste de status HTTP
+        response = self.client.post(subcategory_url, subcategory_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Teste de pesquisa direta no banco
+        subcategory = SubCategorys.objects.get(name="New Subcategory")
+        self.assertEqual(subcategory.name, "New Subcategory")
+        self.assertEqual(subcategory.category, category)
+        self.assertTrue(subcategory.is_active)
+
+    def test_get_subcategory(self):
+        # Teste de resposta sem nenhum registro
+        subcategory_url = reverse("admin-subcategorys-list")
+        response = self.client.get(subcategory_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["results"], [])
+
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+
+        # Teste de resposta com um registro
+        new_subcategory = {"name": "New Subcategory", "category": category.id}
+        self.client.post(subcategory_url, new_subcategory, format="json")
+        response = self.client.get(subcategory_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data["results"],
+            [{"id": 1, "name": "New Subcategory", "category": 1, "is_active": True}],
+        )
+
+    def test_patch_subcategory(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+
+        # Inclusão de dado para teste posterior
+        subcategory_url = reverse("admin-subcategorys-list")
+        new_subcategory = {"name": "New Subcategory", "category": category.id}
+        self.client.post(subcategory_url, new_subcategory, format="json")
+
+        # Teste de atualização de um campo
+        subcategory_url = reverse("admin-subcategorys-detail", kwargs={"pk": 1})
+        new_data = {"name": "Updated Subcategory"}
+        response = self.client.patch(subcategory_url, new_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data,
+            {"id": 1, "name": "Updated Subcategory", "category": 1, "is_active": True},
+        )
+
+    def test_delete_subcategory(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Inclusão de dado para teste posterior
+        subcategory_url = reverse("admin-subcategorys-list")
+        new_subcategory = {"name": "New Subcategory", "category": category.id}
+        self.client.post(subcategory_url, new_subcategory, format="json")
+
+        # Teste de exclusão de um registro
+        subcategory_url = reverse("admin-categorys-detail", kwargs={"pk": 1})
+        response = self.client.delete(subcategory_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
