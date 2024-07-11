@@ -25,7 +25,7 @@ class CategorysViewSet(ModelViewSet):
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
         category_id = self.request.query_params.get("category_id")
@@ -101,7 +101,7 @@ class SubCategorysViewSet(ModelViewSet):
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
         subcategory_id = self.request.query_params.get("subcategory_id")
@@ -189,7 +189,7 @@ class InputsViewSet(ModelViewSet):
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
         input_id = self.request.query_params.get("input_id")
@@ -288,7 +288,7 @@ class SalablesViewSet(ModelViewSet):
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
         salable_id = self.request.query_params.get("salable_id")
@@ -376,7 +376,7 @@ class InputsSalablesViewSet(ModelViewSet):
     http_method_names = ["get", "head", "patch", "delete", "post"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by("id")
 
         salable_id = self.request.query_params.get("salable_id")
 

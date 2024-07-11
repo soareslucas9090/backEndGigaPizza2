@@ -32,3 +32,6 @@ class ListSalablesViewSet(GenericViewSet, ListModelMixin):
         AllowAny,
     ]
     http_method_names = ["get"]
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("subcategory")
