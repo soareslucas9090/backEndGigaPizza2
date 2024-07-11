@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -46,6 +47,12 @@ INTERNAL_IPS = [
     "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com/",
 ]
 
+if "test" in sys.argv or "test_coverage" in sys.argv:
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": ":memory:",
+    }
+
 CORS_ORIGIN_WHITELIST = [
     "https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com",
     "https://cloud.seenode.com",
@@ -80,6 +87,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
