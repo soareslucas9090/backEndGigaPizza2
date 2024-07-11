@@ -83,9 +83,9 @@ Os testes estão configurados para rodar em uma instância local do SQLite
 Para execução dos testes é preciso executar `python manage.py test` no projeto offline
 Atualmente os testes cobrem os seguintes grupos de endpoints (métodos *GET*, *POST*, *PATCH* e *DELETE*):
 - **Auth**
-- **Admin.Categorys**
-- **Admin.Subcategorys**
-- **Public.CreateUsers**
+- **Admin.Categorys** (somente método *GET* para o usuário admin2documentation)
+- **Admin.Subcategorys** (somente método *GET* para o usuário admin2documentation)
+- **Public.CreateUsers** (somente para usuários não autenticados)
 
 Mais testes serão adicionados no decorrer dos dias
 
