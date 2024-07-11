@@ -79,7 +79,15 @@ E rodar o projeto com `python manage.py runserver`
 
 ## Testes
 
-Os testes ainda serão incluídos no projeto.
+Os testes estão configurados para rodar em uma instância local do SQLite
+Para execução dos testes é preciso executar `python manage.py test` no projeto offline
+Atualmente os testes cobrem os seguintes grupos de endpoints (métodos *GET*, *POST*, *PATCH* e *DELETE*):
+- **Auth**
+- **Admin.Categorys**
+- **Admin.Subcategorys**
+- **Public.CreateUsers**
+
+Mais testes serão adicionados no decorrer dos dias
 
 ## Autenticação
 
