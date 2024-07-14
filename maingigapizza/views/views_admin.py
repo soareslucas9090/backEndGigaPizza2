@@ -3,6 +3,7 @@ from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from ..models import Categorys, Inputs, Salables, SubCategorys
@@ -79,7 +80,20 @@ class CategorysViewSet(ModelViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        serializer = self.get_serializer(page, many=True)
+        serializer_hateoas = {"categories": serializer.data}
+
+        return self.get_paginated_response(serializer_hateoas)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer_hateoas = {"category": serializer.data}
+        return Response(serializer_hateoas)
 
     def get_permissions(self):
         if self.request.method in ["PATCH", "DELETE", "POST"]:
@@ -167,7 +181,20 @@ class SubCategorysViewSet(ModelViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        serializer = self.get_serializer(page, many=True)
+        serializer_hateoas = {"subcategories": serializer.data}
+
+        return self.get_paginated_response(serializer_hateoas)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer_hateoas = {"subcategory": serializer.data}
+        return Response(serializer_hateoas)
 
     def get_permissions(self):
         if self.request.method in ["PATCH", "DELETE", "POST"]:
@@ -243,7 +270,20 @@ class InputsViewSet(ModelViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        serializer = self.get_serializer(page, many=True)
+        serializer_hateoas = {"inputs": serializer.data}
+
+        return self.get_paginated_response(serializer_hateoas)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer_hateoas = {"input": serializer.data}
+        return Response(serializer_hateoas)
 
     @extend_schema(
         examples=[
@@ -354,7 +394,20 @@ class SalablesViewSet(ModelViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        serializer = self.get_serializer(page, many=True)
+        serializer_hateoas = {"salables": serializer.data}
+
+        return self.get_paginated_response(serializer_hateoas)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer_hateoas = {"salable": serializer.data}
+        return Response(serializer_hateoas)
 
     def get_permissions(self):
         if self.request.method in ["PATCH", "DELETE", "POST"]:
@@ -433,7 +486,20 @@ class InputsSalablesViewSet(ModelViewSet):
         ],
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        serializer = self.get_serializer(page, many=True)
+        serializer_hateoas = {"inputs_salables": serializer.data}
+
+        return self.get_paginated_response(serializer_hateoas)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer_hateoas = {"input_salable": serializer.data}
+        return Response(serializer_hateoas)
 
     def get_permissions(self):
         if self.request.method in ["PATCH", "DELETE", "POST"]:

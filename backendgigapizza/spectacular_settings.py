@@ -11,11 +11,11 @@ SPECTACULAR_SETTINGS = {
         },
         {
             "name": "Admin.Categories",
-            "description": "Categorys related endpoints to admin users",
+            "description": "Categories related endpoints to admin users",
         },
         {
             "name": "Admin.SubCategories",
-            "description": "SubCategorys related endpoints to admin users",
+            "description": "SubCategories related endpoints to admin users",
         },
         {
             "name": "Admin.Inputs",

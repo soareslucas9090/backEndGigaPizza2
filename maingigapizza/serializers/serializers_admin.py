@@ -1,5 +1,6 @@
 from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema_field
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from ..models import Categorys, Inputs, Inputs_Salables, Salables, SubCategorys
 
@@ -7,25 +8,148 @@ from ..models import Categorys, Inputs, Inputs_Salables, Salables, SubCategorys
 class CategorysSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categorys
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "is_active",
+            "links",
+        )
+
+    links = serializers.SerializerMethodField(read_only=True)
+
+    def get_links(self, obj):
+        request = self.context["request"]
+
+        links = {}
+
+        if self.context["view"].kwargs:
+            links.update({"list": reverse("admin-categories-list", request=request)})
+
+        else:
+            links.update(
+                {
+                    "self": reverse(
+                        "admin-categories-detail",
+                        kwargs={"pk": obj.pk},
+                        request=request,
+                    )
+                }
+            )
+
+        links.update(
+            {
+                "subcategories": request.build_absolute_uri(
+                    reverse("admin-subcategories-list") + f"?category_id={obj.pk}"
+                )
+            }
+        )
+        return links
 
 
 class SubCategorysSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategorys
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "category",
+            "is_active",
+            "links",
+        )
 
     category = serializers.PrimaryKeyRelatedField(queryset=Categorys.objects.all())
+
+    links = serializers.SerializerMethodField(read_only=True)
+
+    def get_links(self, obj):
+        request = self.context["request"]
+
+        links = {}
+
+        if self.context["view"].kwargs:
+            links.update({"list": reverse("admin-subcategories-list", request=request)})
+
+        else:
+            links.update(
+                {
+                    "self": reverse(
+                        "admin-subcategories-detail",
+                        kwargs={"pk": obj.pk},
+                        request=request,
+                    )
+                }
+            )
+
+        links.update(
+            {
+                "category": reverse(
+                    "admin-subcategories-detail",
+                    kwargs={"pk": obj.category.pk},
+                    request=request,
+                ),
+                "salables": request.build_absolute_uri(
+                    reverse("admin-salables-list") + f"?subcategory_id={obj.pk}"
+                ),
+                "inputs": request.build_absolute_uri(
+                    reverse("admin-inputs-list") + f"?subcategory_id={obj.pk}"
+                ),
+            }
+        )
+        return links
 
 
 class InputsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inputs
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "price",
+            "quantity",
+            "unit",
+            "subcategory",
+            "is_active",
+            "links",
+        )
 
     subcategory = serializers.PrimaryKeyRelatedField(
         queryset=SubCategorys.objects.all()
     )
+
+    links = serializers.SerializerMethodField(read_only=True)
+
+    def get_links(self, obj):
+        request = self.context["request"]
+
+        links = {}
+
+        if self.context["view"].kwargs:
+            links.update({"list": reverse("admin-inputs-list", request=request)})
+
+        else:
+            links.update(
+                {
+                    "self": reverse(
+                        "admin-inputs-detail",
+                        kwargs={"pk": obj.pk},
+                        request=request,
+                    )
+                }
+            )
+
+        links.update(
+            {
+                "subcategory": reverse(
+                    "admin-subcategories-detail",
+                    kwargs={"pk": obj.subcategory.pk},
+                    request=request,
+                ),
+                "inputs_salables": request.build_absolute_uri(
+                    reverse("admin-inputs_salables-list") + f"?input_id={obj.pk}"
+                ),
+            }
+        )
+        return links
 
     def validate_unit(self, value):
         allowed_units = dict(Inputs.UNITS).keys()
@@ -39,10 +163,56 @@ class InputsSerializer(serializers.ModelSerializer):
 class InputsSalablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inputs_Salables
-        fields = "__all__"
+        fields = (
+            "id",
+            "input",
+            "salable",
+            "quantity",
+            "links",
+        )
 
     input = serializers.PrimaryKeyRelatedField(queryset=Inputs.objects.all())
     salable = serializers.PrimaryKeyRelatedField(queryset=Salables.objects.all())
+
+    links = serializers.SerializerMethodField(read_only=True)
+
+    def get_links(self, obj):
+        request = self.context["request"]
+
+        links = {}
+
+        if self.context["view"].kwargs:
+            links.update(
+                {"list": reverse("admin-inputs_salables-list", request=request)}
+            )
+
+        else:
+            links.update(
+                {
+                    "self": reverse(
+                        "admin-inputs_salables-detail",
+                        kwargs={"pk": obj.pk},
+                        request=request,
+                    )
+                }
+            )
+
+        links.update(
+            {
+                "input": reverse(
+                    "admin-inputs-detail",
+                    kwargs={"pk": obj.input.pk},
+                    request=request,
+                ),
+                "salable": reverse(
+                    "admin-salables-detail",
+                    kwargs={"pk": obj.salable.pk},
+                    request=request,
+                ),
+            }
+        )
+
+        return links
 
 
 class InputsSalablesToAdd(serializers.Serializer):
@@ -60,6 +230,7 @@ class SalablesSerializer(serializers.ModelSerializer):
             "price",
             "subcategory",
             "is_active",
+            "links",
             "inputs",
         ]
 
@@ -67,6 +238,41 @@ class SalablesSerializer(serializers.ModelSerializer):
         queryset=SubCategorys.objects.all()
     )
     inputs = InputsSalablesToAdd(many=True, write_only=True)
+
+    links = serializers.SerializerMethodField(read_only=True)
+
+    def get_links(self, obj):
+        request = self.context["request"]
+
+        links = {}
+
+        if self.context["view"].kwargs:
+            links.update({"list": reverse("admin-salables-list", request=request)})
+
+        else:
+            links.update(
+                {
+                    "self": reverse(
+                        "admin-salables-detail",
+                        kwargs={"pk": obj.pk},
+                        request=request,
+                    )
+                }
+            )
+
+        links.update(
+            {
+                "inputs_salables": request.build_absolute_uri(
+                    reverse("admin-inputs_salables-list") + f"?salable_id={obj.pk}"
+                ),
+                "subcategory": reverse(
+                    "admin-subcategories-detail",
+                    kwargs={"pk": obj.subcategory.pk},
+                    request=request,
+                ),
+            }
+        )
+        return links
 
     def create(self, validated_data):
         inputs_data = validated_data.pop("inputs")
