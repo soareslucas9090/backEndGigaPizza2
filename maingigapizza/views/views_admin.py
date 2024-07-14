@@ -77,6 +77,13 @@ class CategorysViewSet(ModelViewSet):
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -86,13 +93,38 @@ class CategorysViewSet(ModelViewSet):
 
         serializer = self.get_serializer(page, many=True)
         serializer_hateoas = {"categories": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                for i in range(len(serializer_hateoas["categories"])):
+                    del serializer_hateoas["categories"][i]["links"]
 
         return self.get_paginated_response(serializer_hateoas)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         serializer_hateoas = {"category": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                del serializer_hateoas["category"]["links"]
+
         return Response(serializer_hateoas)
 
     def get_permissions(self):
@@ -178,6 +210,13 @@ class SubCategorysViewSet(ModelViewSet):
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -187,12 +226,38 @@ class SubCategorysViewSet(ModelViewSet):
 
         serializer = self.get_serializer(page, many=True)
         serializer_hateoas = {"subcategories": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                for i in range(len(serializer_hateoas["subcategories"])):
+                    del serializer_hateoas["subcategories"][i]["links"]
+
         return self.get_paginated_response(serializer_hateoas)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         serializer_hateoas = {"subcategory": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                del serializer_hateoas["subcategories"]["links"]
+
         return Response(serializer_hateoas)
 
     def get_permissions(self):
@@ -290,6 +355,13 @@ class InputsViewSet(ModelViewSet):
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -299,13 +371,37 @@ class InputsViewSet(ModelViewSet):
 
         serializer = self.get_serializer(page, many=True)
         serializer_hateoas = {"inputs": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                for i in range(len(serializer_hateoas["inputs"])):
+                    del serializer_hateoas["inputs"][i]["links"]
 
         return self.get_paginated_response(serializer_hateoas)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         serializer_hateoas = {"input": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                del serializer_hateoas["inputs"]["links"]
         return Response(serializer_hateoas)
 
     @extend_schema(
@@ -426,6 +522,13 @@ class SalablesViewSet(ModelViewSet):
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -435,13 +538,37 @@ class SalablesViewSet(ModelViewSet):
 
         serializer = self.get_serializer(page, many=True)
         serializer_hateoas = {"salables": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                for i in range(len(serializer_hateoas["salables"])):
+                    del serializer_hateoas["salables"][i]["links"]
 
         return self.get_paginated_response(serializer_hateoas)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         serializer_hateoas = {"salable": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                del serializer_hateoas["salables"]["links"]
         return Response(serializer_hateoas)
 
     def get_permissions(self):
@@ -518,6 +645,13 @@ class InputsSalablesViewSet(ModelViewSet):
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
         ],
     )
     def list(self, request, *args, **kwargs):
@@ -527,13 +661,37 @@ class InputsSalablesViewSet(ModelViewSet):
 
         serializer = self.get_serializer(page, many=True)
         serializer_hateoas = {"inputs_salables": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                for i in range(len(serializer_hateoas["inputs_salables"])):
+                    del serializer_hateoas["inputs_salables"][i]["links"]
 
         return self.get_paginated_response(serializer_hateoas)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         serializer_hateoas = {"input_salable": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                del serializer_hateoas["inputs_salables"]["links"]
         return Response(serializer_hateoas)
 
     def get_permissions(self):
