@@ -88,8 +88,8 @@ class AdminRoutersAPITestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token)
 
         # Mapeamento das urls da categoria Admin
-        category_url = reverse("admin-categorys-list")
-        subcategory_url = reverse("admin-subcategorys-list")
+        category_url = reverse("admin-categories-list")
+        subcategory_url = reverse("admin-subcategories-list")
         input_url = reverse("admin-inputs-list")
         salable_url = reverse("admin-salables-list")
         input_salable_url = reverse("admin-inputs_salables-list")
@@ -141,7 +141,7 @@ class AdminRoutersAPITestCase(APITestCase):
 
     def test_create_category(self):
         # Dados da nova categoria
-        category_url = reverse("admin-categorys-list")
+        category_url = reverse("admin-categories-list")
         category_data = {"name": "New Category"}
 
         # Teste de status HTTP
@@ -155,31 +155,39 @@ class AdminRoutersAPITestCase(APITestCase):
 
     def test_get_category(self):
         # Teste de resposta sem nenhum registro
-        category_url = reverse("admin-categorys-list")
+        category_url = reverse("admin-categories-list")
         response = self.client.get(category_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["results"], [])
+        self.assertEqual(response.data["results"]["categories"], [])
 
         # Teste de resposta com um registro
         new_category = {"name": "New Category"}
         self.client.post(category_url, new_category, format="json")
         response = self.client.get(category_url)
+
+        # Deletando o campo "links" da resposta
+        for i in range(len(response.data["results"]["categories"])):
+            del response.data["results"]["categories"][i]["links"]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data["results"],
+            response.data["results"]["categories"],
             [{"id": 1, "name": "New Category", "is_active": True}],
         )
 
     def test_patch_category(self):
         # Inclusão de dado para teste posterior
-        category_url = reverse("admin-categorys-list")
+        category_url = reverse("admin-categories-list")
         new_category = {"name": "New Category"}
         self.client.post(category_url, new_category, format="json")
 
         # Teste de atualização de um campo
-        category_url = reverse("admin-categorys-detail", kwargs={"pk": 1})
+        category_url = reverse("admin-categories-detail", kwargs={"pk": 1})
         new_data = {"name": "Updated Category"}
         response = self.client.patch(category_url, new_data, format="json")
+
+        # Deletando o campo "links" da resposta
+        del response.data["links"]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data,
@@ -188,12 +196,12 @@ class AdminRoutersAPITestCase(APITestCase):
 
     def test_delete_category(self):
         # Inclusão de dado para teste posterior
-        category_url = reverse("admin-categorys-list")
+        category_url = reverse("admin-categories-list")
         new_category = {"name": "New Category"}
         self.client.post(category_url, new_category, format="json")
 
         # Teste de exclusão de um registro
-        category_url = reverse("admin-categorys-detail", kwargs={"pk": 1})
+        category_url = reverse("admin-categories-detail", kwargs={"pk": 1})
         response = self.client.delete(category_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -207,7 +215,7 @@ class AdminRoutersAPITestCase(APITestCase):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Dados da nova subcategoria
-        subcategory_url = reverse("admin-subcategorys-list")
+        subcategory_url = reverse("admin-subcategories-list")
         subcategory_data = {"name": "New Subcategory", "category": category.id}
 
         # Teste de status HTTP
@@ -222,10 +230,10 @@ class AdminRoutersAPITestCase(APITestCase):
 
     def test_get_subcategory(self):
         # Teste de resposta sem nenhum registro
-        subcategory_url = reverse("admin-subcategorys-list")
+        subcategory_url = reverse("admin-subcategories-list")
         response = self.client.get(subcategory_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["results"], [])
+        self.assertEqual(response.data["results"]["subcategories"], [])
 
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
@@ -234,9 +242,14 @@ class AdminRoutersAPITestCase(APITestCase):
         new_subcategory = {"name": "New Subcategory", "category": category.id}
         self.client.post(subcategory_url, new_subcategory, format="json")
         response = self.client.get(subcategory_url)
+
+        # Deletando o campo "links" da resposta
+        for i in range(len(response.data["results"]["subcategories"])):
+            del response.data["results"]["subcategories"][i]["links"]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data["results"],
+            response.data["results"]["subcategories"],
             [{"id": 1, "name": "New Subcategory", "category": 1, "is_active": True}],
         )
 
@@ -245,14 +258,18 @@ class AdminRoutersAPITestCase(APITestCase):
         category = Categorys.objects.create(name="Test Category")
 
         # Inclusão de dado para teste posterior
-        subcategory_url = reverse("admin-subcategorys-list")
+        subcategory_url = reverse("admin-subcategories-list")
         new_subcategory = {"name": "New Subcategory", "category": category.id}
         self.client.post(subcategory_url, new_subcategory, format="json")
 
         # Teste de atualização de um campo
-        subcategory_url = reverse("admin-subcategorys-detail", kwargs={"pk": 1})
+        subcategory_url = reverse("admin-subcategories-detail", kwargs={"pk": 1})
         new_data = {"name": "Updated Subcategory"}
         response = self.client.patch(subcategory_url, new_data, format="json")
+
+        # Deletando o campo "links" da resposta
+        del response.data["links"]
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data,
@@ -263,11 +280,11 @@ class AdminRoutersAPITestCase(APITestCase):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Inclusão de dado para teste posterior
-        subcategory_url = reverse("admin-subcategorys-list")
+        subcategory_url = reverse("admin-subcategories-list")
         new_subcategory = {"name": "New Subcategory", "category": category.id}
         self.client.post(subcategory_url, new_subcategory, format="json")
 
         # Teste de exclusão de um registro
-        subcategory_url = reverse("admin-categorys-detail", kwargs={"pk": 1})
+        subcategory_url = reverse("admin-categories-detail", kwargs={"pk": 1})
         response = self.client.delete(subcategory_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
