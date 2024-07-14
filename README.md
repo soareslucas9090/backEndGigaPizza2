@@ -16,6 +16,7 @@ O app está atualmente hospedado no endereço abaixo:
 O link redireciona à documentação Swagger do projeto, com a possibilidade de consumo de algumas rotas públicas.
 O serviço está funcionando corretamente online.
 Também é possível acessar as rotas da API normalmente com POSTMan/Insomnia, além da documentação online.
+A API segue o padrão REST, cumprindo todos os requisitos para ser considerada uma API RESTful
 
 ## Recursos implementados
 -   Criação, manutenção e busca de Categorias, Subcategorias, Insumos, Vendáveis (produtos a serem vendidos), Ingredientes usados no itens vendáveis
@@ -26,6 +27,7 @@ Também é possível acessar as rotas da API normalmente com POSTMan/Insomnia, a
 -   Código simples e de fácil entendimento
 -   Criação de usuários
 -   Listagem de itens para montagem do cardápio público
+-   Método HATEOAS implementado em todas os endpoints
 ### Futuros incrementos
 - Montagem de carrinho de compra
 - Finalização de compras
