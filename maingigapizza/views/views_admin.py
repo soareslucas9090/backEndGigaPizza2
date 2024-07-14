@@ -187,7 +187,6 @@ class SubCategorysViewSet(ModelViewSet):
 
         serializer = self.get_serializer(page, many=True)
         serializer_hateoas = {"subcategories": serializer.data}
-
         return self.get_paginated_response(serializer_hateoas)
 
     def retrieve(self, request, *args, **kwargs):
@@ -229,6 +228,16 @@ class InputsViewSet(ModelViewSet):
         if input_name:
             return queryset.filter(name__icontains=input_name)
 
+        subcategory_id = self.request.query_params.get("subcategory_id")
+
+        if subcategory_id and subcategory_id.isnumeric():
+            return queryset.filter(subcategory=subcategory_id)
+
+        category_id = self.request.query_params.get("category_id")
+
+        if category_id and category_id.isnumeric():
+            return queryset.filter(subcategory__category=category_id)
+
         is_active_value = self.request.query_params.get("is_active")
 
         if is_active_value:
@@ -257,6 +266,20 @@ class InputsViewSet(ModelViewSet):
                 name="input",
                 type=OpenApiTypes.STR,
                 description="Filter by input name",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="subcategory_id",
+                type=OpenApiTypes.INT,
+                description="Filter by subcategory id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="category_id",
+                type=OpenApiTypes.INT,
+                description="Filter by category id",
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
@@ -346,7 +369,12 @@ class SalablesViewSet(ModelViewSet):
         subcategory_id = self.request.query_params.get("subcategory_id")
 
         if subcategory_id and subcategory_id.isnumeric():
-            return queryset.filter(id=subcategory_id)
+            return queryset.filter(subcategory=subcategory_id)
+
+        category_id = self.request.query_params.get("category_id")
+
+        if category_id and category_id.isnumeric():
+            return queryset.filter(subcategory__category=category_id)
 
         if is_active_value:
 
@@ -381,6 +409,13 @@ class SalablesViewSet(ModelViewSet):
                 name="subcategory_id",
                 type=OpenApiTypes.INT,
                 description="Filter by subcategory id",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="category_id",
+                type=OpenApiTypes.INT,
+                description="Filter by category id",
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
