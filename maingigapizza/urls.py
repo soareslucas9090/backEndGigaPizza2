@@ -12,10 +12,10 @@ from .views.views_public import CreateUserViewSet, ListSalablesViewSet
 
 gigapizza_router_admin = SimpleRouter()
 gigapizza_router_admin.register(
-    r"categorys", CategorysViewSet, basename="admin-categorys"
+    r"categories", CategorysViewSet, basename="admin-categorys"
 )
 gigapizza_router_admin.register(
-    r"subcategorys", SubCategorysViewSet, basename="admin-subcategorys"
+    r"categories", SubCategorysViewSet, basename="admin-subcategorys"
 )
 gigapizza_router_admin.register(r"inputs", InputsViewSet, basename="admin-inputs")
 gigapizza_router_admin.register(r"salables", SalablesViewSet, basename="admin-salables")

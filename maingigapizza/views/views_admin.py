@@ -14,7 +14,7 @@ class DefaultNumberPagination(PageNumberPagination):
     page_size = 10
 
 
-@extend_schema(tags=["Admin.Categorys"])
+@extend_schema(tags=["Admin.Categories"])
 class CategorysViewSet(ModelViewSet):
     queryset = Categorys.objects.all()
     serializer_class = CategorysSerializer
@@ -90,7 +90,7 @@ class CategorysViewSet(ModelViewSet):
         return super().get_permissions()
 
 
-@extend_schema(tags=["Admin.SubCategorys"])
+@extend_schema(tags=["Admin.SubCategories"])
 class SubCategorysViewSet(ModelViewSet):
     queryset = SubCategorys.objects.select_related("category").all()
     serializer_class = SubCategorysSerializer
