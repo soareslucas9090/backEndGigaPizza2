@@ -56,7 +56,7 @@ class AdminRoutersAPITestCase(APITestCase):
     #####################################################
     #####################################################
 
-    def test_permissions_adminToDocumentation(self):
+    def test_1_permissions_adminToDocumentation(self):
         # Limpando as credenciais anteriores
         self.client.credentials()
 
@@ -71,6 +71,9 @@ class AdminRoutersAPITestCase(APITestCase):
         create_user_url = reverse("public-create_user-list")
         response = self.client.post(
             create_user_url, admin2documentation_data, format="json"
+        )
+        print(
+            "\nTest 1: Permissions AdminToDocumentation 1 de 12 - Resposta HTTP = 201"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -88,6 +91,7 @@ class AdminRoutersAPITestCase(APITestCase):
             "password": "documentation",
         }
         login_response = self.client.post(login_url, login_data, format="json")
+        print("Test 1: Permissions AdminToDocumentation 2 de 12 - Resposta HTTP = 200")
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
 
         # Autenticação de usuário com o response obtido
@@ -96,47 +100,57 @@ class AdminRoutersAPITestCase(APITestCase):
 
         # Testes em Admin.Category
         response = self.client.get(self.category_url)
+        print("Test 1: Permissions AdminToDocumentation 3 de 12 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.post(
             self.category_url, {"test dict": "test"}, format="json"
         )
+        print("Test 1: Permissions AdminToDocumentation 4 de 12 - Resposta HTTP = 403")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # Testes em Admin.Subcategory
         response = self.client.get(self.subcategory_url)
+        print("Test 1: Permissions AdminToDocumentation 5 de 12 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.post(
             self.subcategory_url, {"test dict": "test"}, format="json"
         )
+        print("Test 1: Permissions AdminToDocumentation 6 de 12 - Resposta HTTP = 403")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # Testes em Admin.Inputs
         response = self.client.get(self.input_url)
+        print("Test 1: Permissions AdminToDocumentation 7 de 12 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.post(
             self.input_url, {"test dict": "test"}, format="json"
         )
+        print("Test 1: Permissions AdminToDocumentation 8 de 12 - Resposta HTTP = 403")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # Testes em Admin.Salables
         response = self.client.get(self.salable_url)
+        print("Test 1: Permissions AdminToDocumentation 9 de 12 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.post(
             self.salable_url, {"test dict": "test"}, format="json"
         )
+        print("Test 1: Permissions AdminToDocumentation 10 de 12 - Resposta HTTP = 403")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         # Testes em Admin.Salables_Compositions
         response = self.client.get(self.salables_compositions_url)
+        print("Test 1: Permissions AdminToDocumentation 11 de 12 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.post(
             self.salables_compositions_url, {"test dict": "test"}, format="json"
         )
+        print("Test 1: Permissions AdminToDocumentation 12 de 12 - Resposta HTTP = 403")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     #####################################################
@@ -145,27 +159,32 @@ class AdminRoutersAPITestCase(APITestCase):
     #####################################################
     #####################################################
 
-    def test_create_category(self):
+    def test_2_1_create_category(self):
         # Dados da nova categoria
         category_data = {"name": "New Category"}
 
         # Teste de status HTTP
         response = self.client.post(self.category_url, category_data, format="json")
+        print("\nTest 2.1: Create Category 1 de 3 - Resposta HTTP = 201")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Teste de pesquisa direta no banco
         category = Categorys.objects.get(name="New Category")
+        print("Test 2.1: Create Category 2 de 3 - Category Name")
         self.assertEqual(category.name, "New Category")
+        print("Test 2.1: Create Category 3 de 3 - Category IsActive")
         self.assertTrue(category.is_active)
 
-    def test_get_category(self):
+    def test_2_2_get_category(self):
         # Teste de resposta sem nenhum registro
         response = self.client.get(self.category_url)
+        print("\nTest 2.2: Get Category 1 de 4 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 2.2: Get Category 2 de 4 - Resposta Vazia")
         self.assertEqual(response.data["results"]["categories"], [])
 
         # Teste de resposta com um registro
-        new_category = {"name": "New Category"}
+        new_category = {"name": "New Category\n"}
         self.client.post(self.category_url, new_category, format="json")
         response = self.client.get(self.category_url)
 
@@ -173,38 +192,43 @@ class AdminRoutersAPITestCase(APITestCase):
         for i in range(len(response.data["results"]["categories"])):
             del response.data["results"]["categories"][i]["links"]
 
+        print("Test 2.2: Get Category 3 de 4 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 2.2: Get Category 4 de 4 - GET Category")
         self.assertEqual(
             response.data["results"]["categories"],
             [{"id": 1, "name": "New Category", "is_active": True}],
         )
 
-    def test_patch_category(self):
+    def test_2_3_patch_category(self):
         # Inclusão de dado para teste posterior
-        new_category = {"name": "New Category"}
+        new_category = {"name": "New Category\n"}
         self.client.post(self.category_url, new_category, format="json")
 
         # Teste de atualização de um campo
         category_url_detail = reverse("admin-categories-detail", kwargs={"pk": 1})
-        new_data = {"name": "Updated Category"}
+        new_data = {"name": "Updated Category\n"}
         response = self.client.patch(category_url_detail, new_data, format="json")
 
         # Deletando o campo "links" da resposta
         del response.data["links"]
+        print("\nTest 2.3: Patch Category 1 de 2 - Respota HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 2.3: Patch Category 2 de 2 - PATCH Category")
         self.assertEqual(
             response.data,
             {"id": 1, "name": "Updated Category", "is_active": True},
         )
 
-    def test_delete_category(self):
+    def test_2_4_delete_category(self):
         # Inclusão de dado para teste posterior
-        new_category = {"name": "New Category"}
+        new_category = {"name": "New Category\n"}
         self.client.post(self.category_url, new_category, format="json")
 
         # Teste de exclusão de um registro
         category_url_detail = reverse("admin-categories-detail", kwargs={"pk": 1})
         response = self.client.delete(category_url_detail)
+        print("\nTest 2.4: Delete Category 1 de 1 - Respota HTTP = 204")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     #####################################################
@@ -213,7 +237,7 @@ class AdminRoutersAPITestCase(APITestCase):
     #####################################################
     #####################################################
 
-    def test_create_subcategory(self):
+    def test_3_1_create_subcategory(self):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Dados da nova subcategoria
@@ -223,22 +247,28 @@ class AdminRoutersAPITestCase(APITestCase):
         response = self.client.post(
             self.subcategory_url, subcategory_data, format="json"
         )
+        print("\nTest 3.1: Create Subcategory 1 de 4 - Respota HTTP = 201")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Teste de pesquisa direta no banco
         subcategory = SubCategorys.objects.get(name="New Subcategory")
+        print("Test 3.1: Create Subcategory 2 de 4 - Subcategory Name")
         self.assertEqual(subcategory.name, "New Subcategory")
+        print("Test 3.1: Create Subcategory 3 de 4 - Subcategory Category")
         self.assertEqual(subcategory.category, category)
+        print("Test 3.1: Create Subcategory 4 de 4 - Subcategory IsActive")
         self.assertTrue(subcategory.is_active)
 
-    def test_get_subcategory(self):
+    def test_3_2_get_subcategory(self):
         # Teste de resposta sem nenhum registro
         response = self.client.get(self.subcategory_url)
+        print("\nTest 3.2: Get Subcategory 1 de 4 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 3.2: Get Subcategory 2 de 4 - Resposta Vazia")
         self.assertEqual(response.data["results"]["subcategories"], [])
 
         # Criação de uma nova categoria
-        category = Categorys.objects.create(name="Test Category")
+        category = Categorys.objects.create(name="Test Category\n")
 
         # Teste de resposta com um registro
         new_subcategory = {"name": "New Subcategory", "category": category.id}
@@ -249,13 +279,15 @@ class AdminRoutersAPITestCase(APITestCase):
         for i in range(len(response.data["results"]["subcategories"])):
             del response.data["results"]["subcategories"][i]["links"]
 
+        print("Test 3.2: Get Subcategory 3 de 4 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 3.2: Get Subcategory 4 de 4 - GET Subcategory")
         self.assertEqual(
             response.data["results"]["subcategories"],
             [{"id": 1, "name": "New Subcategory", "category": 1, "is_active": True}],
         )
 
-    def test_patch_subcategory(self):
+    def test_3_3_patch_subcategory(self):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
 
@@ -271,13 +303,15 @@ class AdminRoutersAPITestCase(APITestCase):
         # Deletando o campo "links" da resposta
         del response.data["links"]
 
+        print("\nTest 3.3: Patch Subcategory 1 de 2 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 3.3: Patch Subcategory 2 de 2 - PATCH Subcategory")
         self.assertEqual(
             response.data,
             {"id": 1, "name": "Updated Subcategory", "category": 1, "is_active": True},
         )
 
-    def test_delete_subcategory(self):
+    def test_3_4_delete_subcategory(self):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Inclusão de dado para teste posterior
@@ -285,8 +319,9 @@ class AdminRoutersAPITestCase(APITestCase):
         self.client.post(self.subcategory_url, new_subcategory, format="json")
 
         # Teste de exclusão de um registro
-        subcategory_url_detail = reverse("admin-categories-detail", kwargs={"pk": 1})
+        subcategory_url_detail = reverse("admin-subcategories-detail", kwargs={"pk": 1})
         response = self.client.delete(subcategory_url_detail)
+        print("\nTest 3.4: Delete Subcategory 1 de 1 - DELETE Subcategory")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     #####################################################
@@ -295,7 +330,7 @@ class AdminRoutersAPITestCase(APITestCase):
     #####################################################
     #####################################################
 
-    def test_create_input(self):
+    def test_4_1_create_input(self):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Criação de uma nova subcategoria
@@ -316,23 +351,30 @@ class AdminRoutersAPITestCase(APITestCase):
 
         # Teste de validação do campo "unit"
         response = self.client.post(self.input_url, input_data, format="json")
+        print("\nTest 4.1: Create Input 1 de 5 - Resposta HTTP = 400")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # Teste de validação do campo "unit"
+        # Teste de com campo "unit" correto
         input_data.update({"unit": "und"})
         response = self.client.post(self.input_url, input_data, format="json")
+        print("Test 4.1: Create Input 2 de 5 - Resposta HTTP = 201")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Teste de pesquisa direta no banco
         input = Inputs.objects.get(name="New Input")
+        print("Test 4.1: Create Input 3 de 5 - Input Name")
         self.assertEqual(input.name, "New Input")
+        print("Test 4.1: Create Input 4 de 5 - Input Subcategory")
         self.assertEqual(input.subcategory, subcategory)
+        print("Test 4.1: Create Input 5 de 5 - Input IsActive")
         self.assertTrue(input.is_active)
 
-    def test_get_inputs(self):
+    def test_4_2_get_input(self):
         # Teste de resposta sem nenhum registro
         response = self.client.get(self.input_url)
+        print("\nTest 4.2: Get Input 1 de 4 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 4.2: Get Input 2 de 4 - Resposta Vazia")
         self.assertEqual(response.data["results"]["inputs"], [])
 
         # Criação de uma nova categoria
@@ -357,7 +399,9 @@ class AdminRoutersAPITestCase(APITestCase):
         for i in range(len(response.data["results"]["inputs"])):
             del response.data["results"]["inputs"][i]["links"]
 
+        print("Test 4.2: Get Input 3 de 4 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 4.2: Get Input 4 de 4 - GET Input")
         self.assertEqual(
             response.data["results"]["inputs"],
             [
@@ -373,7 +417,7 @@ class AdminRoutersAPITestCase(APITestCase):
             ],
         )
 
-    def test_patch_inputs(self):
+    def test_4_3_patch_input(self):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Criação de uma nova subcategoria
@@ -393,27 +437,29 @@ class AdminRoutersAPITestCase(APITestCase):
 
         # Teste de atualização de um campo
         input_url_detail = reverse("admin-inputs-detail", kwargs={"pk": 1})
-        new_data = {"name": "Updated Input"}
+        new_data = {"name": "Updated Input", "unit": "g"}
         response = self.client.patch(input_url_detail, new_data, format="json")
 
         # Deletando o campo "links" da resposta
         del response.data["links"]
 
+        print("\nTest 4.3: Patch Input 1 de 2 - Resposta HTTP = 200")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 4.3: Patch Input 2 de 2 - PATCH Input")
         self.assertEqual(
             response.data,
             {
                 "id": 1,
                 "name": "Updated Input",
-                "subcategory": 1,
-                "quantity": 2,
                 "price": 1.5,
-                "unit": "und",
+                "quantity": 2,
+                "unit": "g",
+                "subcategory": 1,
                 "is_active": True,
             },
         )
 
-    def test_delete_input(self):
+    def test_4_4_delete_input(self):
         # Criação de uma nova categoria
         category = Categorys.objects.create(name="Test Category")
         # Criação de uma nova subcategoria
@@ -431,6 +477,158 @@ class AdminRoutersAPITestCase(APITestCase):
         self.client.post(self.input_url, new_input, format="json")
 
         # Teste de exclusão de um registro
-        input_url_detail = reverse("admin-categories-detail", kwargs={"pk": 1})
+        input_url_detail = reverse("admin-inputs-detail", kwargs={"pk": 1})
         response = self.client.delete(input_url_detail)
+        print("\nTest 4.4: Delete Input 1 de 1 - DELETE Input")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    #####################################################
+    #####################################################
+    ################### Admin.Salables ##################
+    #####################################################
+    #####################################################
+
+    def test_5_1_create_salable(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Category", category=category
+        )
+
+        # Dados do novo salable
+        salable_data = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 2.5,
+            "subcategory": subcategory.id,
+            "inputs": [],
+        }
+
+        # Teste de status HTTP
+        response = self.client.post(self.salable_url, salable_data, format="json")
+        print("\nTest 5.1: Create Salable 1 de 4 - Resposta HTTP = 201")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Teste de pesquisa direta no banco
+        salable = Salables.objects.get(name="New Salable")
+        print("Test 5.1: Create Salable 2 de 4 - Salable Name")
+        self.assertEqual(salable.name, "New Salable")
+        print("Test 5.1: Create Salable 3 de 4 - Salable Subcategory")
+        self.assertEqual(salable.subcategory, subcategory)
+        print("Test 5.1: Create Salable 4 de 4 - Salable IsActive")
+        self.assertTrue(salable.is_active)
+
+    def test_5_2_get_salables(self):
+        # Teste de resposta sem nenhum registro
+        response = self.client.get(self.salable_url)
+        print("\nTest 5.2: Get Salable 1 de 4 - Resposta HTTP = 200")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 5.2: Get Salable 2 de 4 - Resposta Vazia")
+        self.assertEqual(response.data["results"]["salables"], [])
+
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Category", category=category
+        )
+
+        # Teste de resposta com um registro
+        new_salable = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 2.5,
+            "subcategory": subcategory.id,
+            "inputs": [],
+        }
+
+        self.client.post(self.salable_url, new_salable, format="json")
+        response = self.client.get(self.salable_url)
+
+        # Deletando o campo "links" da resposta
+        for i in range(len(response.data["results"]["salables"])):
+            del response.data["results"]["salables"][i]["links"]
+
+        print("Test 5.2: Get Salable 3 de 4 - Resposta HTTP = 200")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 5.2: Get Salable 4 de 4 - GET Salable")
+        self.assertEqual(
+            response.data["results"]["salables"],
+            [
+                {
+                    "id": 1,
+                    "name": "New Salable",
+                    "description": "New Salable Description",
+                    "price": 2.5,
+                    "subcategory": subcategory.id,
+                    "is_active": True,
+                }
+            ],
+        )
+
+    def test_5_3_patch_salables(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Subcategory", category=category
+        )
+
+        # Inclusão de dado para teste posterior
+        new_salable = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 2.5,
+            "subcategory": subcategory.id,
+            "inputs": [],
+        }
+
+        self.client.post(self.salable_url, new_salable, format="json")
+
+        # Teste de atualização de um campo
+        salable_url_detail = reverse("admin-salables-detail", kwargs={"pk": 1})
+        new_data = {"name": "Updated Salable"}
+        response = self.client.patch(salable_url_detail, new_data, format="json")
+
+        # Deletando o campo "links" da resposta
+        del response.data["links"]
+
+        print("\nTest 5.3: Patch Salable 1 de 2 - Resposta HTTP = 200")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 5.3: Patch Salable 2 de 2 - PATCH Salable")
+        self.assertEqual(
+            response.data,
+            {
+                "id": 1,
+                "name": "Updated Salable",
+                "description": "New Salable Description",
+                "price": 2.5,
+                "subcategory": subcategory.id,
+                "is_active": True,
+            },
+        )
+
+    def test_5_4_delete_input(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Subcategory", category=category
+        )
+
+        # Inclusão de dado para teste posterior
+        new_salable = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 2.5,
+            "subcategory": subcategory.id,
+            "inputs": [],
+        }
+        self.client.post(self.salable_url, new_salable, format="json")
+
+        # Teste de exclusão de um registro
+        salable_url_detail = reverse("admin-salables-detail", kwargs={"pk": 1})
+        response = self.client.delete(salable_url_detail)
+        print("\nTest 5.4: Delete Salable 1 de 1 - DELETE Salable")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
