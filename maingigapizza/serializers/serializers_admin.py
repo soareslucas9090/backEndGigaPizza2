@@ -69,6 +69,7 @@ class SubCategorysSerializer(serializers.ModelSerializer):
 
         links = {}
 
+        # Diferentes links para caso de LIST e RETRIEVE
         if self.context["view"].kwargs:
             links.update({"list": reverse("admin-subcategories-list", request=request)})
 
@@ -127,6 +128,7 @@ class InputsSerializer(serializers.ModelSerializer):
 
         links = {}
 
+        # Diferentes links para caso de LIST e RETRIEVE
         if self.context["view"].kwargs:
             links.update({"list": reverse("admin-inputs-list", request=request)})
 
@@ -187,6 +189,7 @@ class SalablesCompositionsSerializer(serializers.ModelSerializer):
 
         links = {}
 
+        # Diferentes links para caso de LIST e RETRIEVE
         if self.context["view"].kwargs:
             links.update(
                 {"list": reverse("admin-inputs_salables-list", request=request)}
@@ -253,6 +256,7 @@ class SalablesSerializer(serializers.ModelSerializer):
 
         links = {}
 
+        # Diferentes links para caso de LIST e RETRIEVE
         if self.context["view"].kwargs:
             links.update({"list": reverse("admin-salables-list", request=request)})
 
@@ -307,7 +311,7 @@ class SalablesSerializer(serializers.ModelSerializer):
         instance.save()
 
         # Delete dos inputs existentes
-        instance.inputs.clear()
+        Salables_Compositions.objects.delete(salable=instance)
 
         # Adicinando os novos inputs
         for input_data in inputs_data:
