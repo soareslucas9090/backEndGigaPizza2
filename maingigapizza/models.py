@@ -48,7 +48,7 @@ class Inputs(models.Model):
     subcategory = models.ForeignKey(
         SubCategorys,
         on_delete=models.CASCADE,
-        related_name="_inputs_subcategory",
+        related_name="inputs_subcategory",
         null=False,
     )
     is_active = models.BooleanField(default=True, null=False)
@@ -70,13 +70,13 @@ class Salables(models.Model):
         return f"{self.name}"
 
 
-class Inputs_Salables(models.Model):
+class Salables_Compositions(models.Model):
     salable = models.ForeignKey(Salables, on_delete=models.RESTRICT)
     input = models.ForeignKey(Inputs, on_delete=models.RESTRICT)
     quantity = models.FloatField(null=False)
 
     def __str__(self):
-        return f"Inputs_Salables {self.salable}, {self.input}, {self.quantity}"
+        return f"Salables_Compositions {self.salable}, {self.input}, {self.quantity}"
 
 
 class Pizzas(models.Model):

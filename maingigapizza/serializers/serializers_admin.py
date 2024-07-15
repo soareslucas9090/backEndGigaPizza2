@@ -1,8 +1,7 @@
-from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from ..models import Categorys, Inputs, Inputs_Salables, Salables, SubCategorys
+from ..models import Categorys, Inputs, Salables, Salables_Compositions, SubCategorys
 
 
 class CategorysSerializer(serializers.ModelSerializer):
@@ -15,12 +14,15 @@ class CategorysSerializer(serializers.ModelSerializer):
             "links",
         )
 
+    # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
     def get_links(self, obj):
         request = self.context["request"]
 
         links = {}
+
+        # Diferentes links para caso de LIST e RETRIEVE
 
         if self.context["view"].kwargs:
             links.update({"list": reverse("admin-categories-list", request=request)})
@@ -59,6 +61,7 @@ class SubCategorysSerializer(serializers.ModelSerializer):
 
     category = serializers.PrimaryKeyRelatedField(queryset=Categorys.objects.all())
 
+    # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
     def get_links(self, obj):
@@ -116,6 +119,7 @@ class InputsSerializer(serializers.ModelSerializer):
         queryset=SubCategorys.objects.all()
     )
 
+    # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
     def get_links(self, obj):
@@ -144,13 +148,14 @@ class InputsSerializer(serializers.ModelSerializer):
                     kwargs={"pk": obj.subcategory.pk},
                     request=request,
                 ),
-                "inputs_salables": request.build_absolute_uri(
-                    reverse("admin-inputs_salables-list") + f"?input_id={obj.pk}"
+                "salables_compositions": request.build_absolute_uri(
+                    reverse("admin-salables_compositions-list") + f"?input_id={obj.pk}"
                 ),
             }
         )
         return links
 
+    # Retorno de mensagem listando quais as unidades aceitas pelo sistema
     def validate_unit(self, value):
         allowed_units = dict(Inputs.UNITS).keys()
         if value not in allowed_units:
@@ -160,9 +165,9 @@ class InputsSerializer(serializers.ModelSerializer):
         return value
 
 
-class InputsSalablesSerializer(serializers.ModelSerializer):
+class SalablesCompositionsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Inputs_Salables
+        model = Salables_Compositions
         fields = (
             "id",
             "input",
@@ -174,6 +179,7 @@ class InputsSalablesSerializer(serializers.ModelSerializer):
     input = serializers.PrimaryKeyRelatedField(queryset=Inputs.objects.all())
     salable = serializers.PrimaryKeyRelatedField(queryset=Salables.objects.all())
 
+    # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
     def get_links(self, obj):
@@ -215,7 +221,7 @@ class InputsSalablesSerializer(serializers.ModelSerializer):
         return links
 
 
-class InputsSalablesToAdd(serializers.Serializer):
+class SalablesCompositionsToAdd(serializers.Serializer):
     input = serializers.PrimaryKeyRelatedField(queryset=Inputs.objects.all())
     quantity = serializers.FloatField(required=True)
 
@@ -237,8 +243,9 @@ class SalablesSerializer(serializers.ModelSerializer):
     subcategory = serializers.PrimaryKeyRelatedField(
         queryset=SubCategorys.objects.all()
     )
-    inputs = InputsSalablesToAdd(many=True, write_only=True)
+    inputs = SalablesCompositionsToAdd(many=True, write_only=True)
 
+    # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
     def get_links(self, obj):
@@ -262,8 +269,9 @@ class SalablesSerializer(serializers.ModelSerializer):
 
         links.update(
             {
-                "inputs_salables": request.build_absolute_uri(
-                    reverse("admin-inputs_salables-list") + f"?salable_id={obj.pk}"
+                "salables_compositions": request.build_absolute_uri(
+                    reverse("admin-salables_compositions-list")
+                    + f"?salable_id={obj.pk}"
                 ),
                 "subcategory": reverse(
                     "admin-subcategories-detail",
@@ -274,12 +282,13 @@ class SalablesSerializer(serializers.ModelSerializer):
         )
         return links
 
+    # Método personalizado para permitir a inserção de
     def create(self, validated_data):
         inputs_data = validated_data.pop("inputs")
         salable = Salables.objects.create(**validated_data)
 
         for input_data in inputs_data:
-            Inputs_Salables.objects.create(
+            Salables_Compositions.objects.create(
                 salable=salable,
                 input=input_data["input"],
                 quantity=input_data["quantity"],
@@ -297,12 +306,12 @@ class SalablesSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get("is_active", instance.is_active)
         instance.save()
 
-        # Delete existing inputs
+        # Delete dos inputs existentes
         instance.inputs.clear()
 
-        # Add new inputs
+        # Adicinando os novos inputs
         for input_data in inputs_data:
-            Inputs_Salables.objects.create(
+            Salables_Compositions.objects.create(
                 salable=instance,
                 input_id=input_data["input"]["id"],
                 quantity=input_data["quantity"],

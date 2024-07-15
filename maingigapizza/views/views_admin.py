@@ -1,14 +1,21 @@
 from django.shortcuts import render
-from drf_spectacular.utils import OpenApiExample, extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Categorys, Inputs, Salables, SubCategorys
+from ..models import Categorys, Inputs, Salables, Salables_Compositions, SubCategorys
 from ..permissions import IsAdmin, IsAdminToDocumentation, IsAnonymousUser
-from ..serializers.serializers_admin import *
+from ..serializers.serializers_admin import (
+    CategorysSerializer,
+    InputsSerializer,
+    SalablesCompositionsSerializer,
+    SalablesSerializer,
+    SubCategorysSerializer,
+)
 
 
 class DefaultNumberPagination(PageNumberPagination):
@@ -580,10 +587,10 @@ class SalablesViewSet(ModelViewSet):
         return super().get_permissions()
 
 
-@extend_schema(tags=["Admin.InputsSalables"])
-class InputsSalablesViewSet(ModelViewSet):
-    queryset = Inputs_Salables.objects.all()
-    serializer_class = InputsSalablesSerializer
+@extend_schema(tags=["Admin.SalablesCompositions"])
+class SalablesCompositionsViewSet(ModelViewSet):
+    queryset = Salables_Compositions.objects.all()
+    serializer_class = SalablesCompositionsSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
         IsAdmin,

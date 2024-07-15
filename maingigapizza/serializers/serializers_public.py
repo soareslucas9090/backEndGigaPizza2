@@ -2,7 +2,7 @@ from django.contrib.auth.hashers import make_password
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from ..models import Inputs_Salables, Salables, Users
+from ..models import Salables, Users
 
 
 class UsersSerializer(serializers.ModelSerializer):

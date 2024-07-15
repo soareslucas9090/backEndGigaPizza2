@@ -22,8 +22,8 @@ SPECTACULAR_SETTINGS = {
             "description": "Inputs related endpoints to admin users",
         },
         {
-            "name": "Admin.InputsSalables",
-            "description": "Inputs_Salables related endpoints to admin users",
+            "name": "Admin.SalablesCompositions",
+            "description": "Salables_Compositions related endpoints to admin users",
         },
         {
             "name": "Public.Create Users",

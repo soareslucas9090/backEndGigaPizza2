@@ -3,8 +3,8 @@ from rest_framework.routers import SimpleRouter
 
 from .views.views_admin import (
     CategorysViewSet,
-    InputsSalablesViewSet,
     InputsViewSet,
+    SalablesCompositionsViewSet,
     SalablesViewSet,
     SubCategorysViewSet,
 )
@@ -20,7 +20,9 @@ gigapizza_router_admin.register(
 gigapizza_router_admin.register(r"inputs", InputsViewSet, basename="admin-inputs")
 gigapizza_router_admin.register(r"salables", SalablesViewSet, basename="admin-salables")
 gigapizza_router_admin.register(
-    r"inputs_salables", InputsSalablesViewSet, basename="admin-inputs_salables"
+    r"salables_compositions",
+    SalablesCompositionsViewSet,
+    basename="admin-salables_compositions",
 )
 
 gigapizza_router_public = SimpleRouter()

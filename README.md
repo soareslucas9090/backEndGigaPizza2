@@ -37,7 +37,7 @@ A API segue o padrão REST, cumprindo todos os requisitos para ser considerada u
 
 ## API
 
-A API foi implementada com autenticação SimpleJWT, usando Django Rest Framework, a documentação foi feita com Swagger, via DRF-Spectacular, sendo totalmente funcional e testável. Para isso, é possível o consumo de rotas classificadas como **Public**, mas também será listado um usuário do tipo *Admin* abaixo para que seja possível o login e consumo de rotas classificadas como **Admin** (para este usuário será liberado apenas requisições do tipo *GET*. 
+A API foi implementada com autenticação SimpleJWT, usando Django Rest Framework, a documentação foi feita com Swagger, via DRF-Spectacular, sendo totalmente funcional e testável. Para isso, é possível o consumo de rotas classificadas como **Public**, mas também será listado um usuário do tipo *Admin* abaixo para que seja possível o login e consumo de rotas classificadas como **Admin** (para este usuário será liberado apenas requisições do tipo *GET*). 
 
 Abaixo um print da área de login da API com JWT, é necessário consummir a rota /api/token/, obter o token "access" e colar o valor recebido na opção circulada logo acima "Authorize"
 
@@ -45,6 +45,7 @@ Abaixo um print da área de login da API com JWT, é necessário consummir a rot
 
 
 Foram implementados filtros de pesquisa (query-params) em todas as rotas pertecentes a usuários do tipo Admin, para facilitar o manuseio do sistema.
+Cada endpoint traz também links de referências a todos os documentos relacionados ao objeto de requisição, obedecendo ao método REST HATEOAS, o que pode ser útil para entender os retornos da API sem a ajuda da documentação, mas pode deixar o retorno mais pesado. Para desativar o retorno dos links, use o query parameter `links=false`.
 
 A documentação está na rota `/api/schema/swagger/`
 Por consequência, documentação online pode ser acessada em <https://web-72ljjv9mgqrj.up-de-fra1-k8s-1.apps.run-on-seenode.com/api/schema/swagger/>
