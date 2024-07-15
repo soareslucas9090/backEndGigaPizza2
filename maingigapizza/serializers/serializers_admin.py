@@ -192,14 +192,14 @@ class SalablesCompositionsSerializer(serializers.ModelSerializer):
         # Diferentes links para caso de LIST e RETRIEVE
         if self.context["view"].kwargs:
             links.update(
-                {"list": reverse("admin-inputs_salables-list", request=request)}
+                {"list": reverse("admin-salables_compositions-list", request=request)}
             )
 
         else:
             links.update(
                 {
                     "self": reverse(
-                        "admin-inputs_salables-detail",
+                        "admin-salables_compositions-detail",
                         kwargs={"pk": obj.pk},
                         request=request,
                     )
