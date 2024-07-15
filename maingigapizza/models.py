@@ -78,6 +78,14 @@ class Salables_Compositions(models.Model):
     def __str__(self):
         return f"Salables_Compositions {self.salable}, {self.input}, {self.quantity}"
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["salable", "input"],
+                name="unique_salable_composition_input_constraint",
+            )
+        ]
+
 
 class Pizzas(models.Model):
     name = models.CharField(max_length=255, null=False)
