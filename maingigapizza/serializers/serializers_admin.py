@@ -301,8 +301,6 @@ class SalablesSerializer(serializers.ModelSerializer):
         return salable
 
     def update(self, instance, validated_data):
-        inputs_data = validated_data.pop("inputs")
-
         instance.name = validated_data.get("name", instance.name)
         instance.description = validated_data.get("description", instance.description)
         instance.price = validated_data.get("price", instance.price)
@@ -310,15 +308,18 @@ class SalablesSerializer(serializers.ModelSerializer):
         instance.is_active = validated_data.get("is_active", instance.is_active)
         instance.save()
 
-        # Delete dos inputs existentes
-        Salables_Compositions.objects.delete(salable=instance)
+        # Atualização dos inputs existentes
+        if validated_data.get("inputs", None):
+            inputs_data = validated_data.pop("inputs")
+            # Deletando os inputs antigos
+            Salables_Compositions.objects.delete(salable=instance)
 
-        # Adicinando os novos inputs
-        for input_data in inputs_data:
-            Salables_Compositions.objects.create(
-                salable=instance,
-                input_id=input_data["input"]["id"],
-                quantity=input_data["quantity"],
-            )
+            # Adicinando os novos inputs
+            for input_data in inputs_data:
+                Salables_Compositions.objects.create(
+                    salable=instance,
+                    input_id=input_data["input"]["id"],
+                    quantity=input_data["quantity"],
+                )
 
         return instance
