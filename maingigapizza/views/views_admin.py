@@ -667,14 +667,14 @@ class SalablesCompositionsViewSet(ModelViewSet):
         page = self.paginate_queryset(queryset)
 
         serializer = self.get_serializer(page, many=True)
-        serializer_hateoas = {"inputs_salables": serializer.data}
+        serializer_hateoas = {"salables_compositions": serializer.data}
         links = self.request.query_params.get("links")
 
         if links:
             if links.lower() == "false":
                 links = False
-                for i in range(len(serializer_hateoas["inputs_salables"])):
-                    del serializer_hateoas["inputs_salables"][i]["links"]
+                for i in range(len(serializer_hateoas["salables_compositions"])):
+                    del serializer_hateoas["salables_compositions"][i]["links"]
 
         return self.get_paginated_response(serializer_hateoas)
 
@@ -692,13 +692,13 @@ class SalablesCompositionsViewSet(ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
-        serializer_hateoas = {"input_salable": serializer.data}
+        serializer_hateoas = {"salables_compositions": serializer.data}
         links = self.request.query_params.get("links")
 
         if links:
             if links.lower() == "false":
                 links = False
-                del serializer_hateoas["inputs_salables"]["links"]
+                del serializer_hateoas["salables_compositions"]["links"]
         return Response(serializer_hateoas)
 
     def get_permissions(self):
