@@ -20,7 +20,7 @@ A API segue o padrão REST, cumprindo todos os requisitos para ser considerada u
 
 ## Recursos implementados
 -   Criação, manutenção e busca de Categorias, Subcategorias, Insumos, Vendáveis (produtos a serem vendidos), Ingredientes usados no itens vendáveis
-- Gerenciamento de estoque
+-   Gerenciamento de estoque
 -   Segurança e gerenciamento para diferentes tipos de usuários
 -   Personalização de views de acordo com permissões de usuário
 -   Segurança baseada em tokens jwt (access e refresh tokens)
@@ -94,9 +94,8 @@ Atualmente os testes cobrem os seguintes grupos de endpoints (métodos *GET*, *P
 - **Admin.Subcategorys** (somente método *GET* para o usuário admin2documentation)
 - **Admin.Inputs** (somente método *GET* para o usuário admin2documentation)
 - **Admin.Salables** (somente método *GET* para o usuário admin2documentation)
+- **Admin.Salables_Compositions** (somente método *GET* para o usuário admin2documentation)
 - **Public.CreateUsers** (somente para usuários não autenticados)
-
-Mais testes serão adicionados no decorrer dos dias
 
 ## Autenticação
 
