@@ -2,7 +2,14 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from maingigapizza.models import Categorys, Inputs, Salables, SubCategorys, Users
+from maingigapizza.models import (
+    Categorys,
+    Inputs,
+    Salables,
+    Salables_Compositions,
+    SubCategorys,
+    Users,
+)
 
 
 class AdminRoutersAPITestCase(APITestCase):
@@ -631,4 +638,265 @@ class AdminRoutersAPITestCase(APITestCase):
         salable_url_detail = reverse("admin-salables-detail", kwargs={"pk": 1})
         response = self.client.delete(salable_url_detail)
         print("\nTest 5.4: Delete Salable 1 de 1 - DELETE Salable")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    #####################################################
+    #####################################################
+    ############ Admin.Salables_Compositions ############
+    #####################################################
+    #####################################################
+
+    def test_6_1_create_salable_composition(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Subcategory", category=category
+        )
+        input1 = Inputs.objects.create(
+            name="Test Input 1",
+            subcategory=subcategory,
+            price=5.5,
+            quantity=4.1,
+            unit="und",
+        )
+        input2 = Inputs.objects.create(
+            name="Test Input 2",
+            subcategory=subcategory,
+            price=7,
+            quantity=5.1,
+            unit="l",
+        )
+
+        # Criando Salables_Composition a partir de um Salable
+        salable_data = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 30,
+            "subcategory": subcategory.id,
+            "inputs": [
+                {
+                    "input": input1.id,
+                    "quantity": 2.1,
+                },
+                {
+                    "input": input2.id,
+                    "quantity": 5,
+                },
+            ],
+        }
+
+        # Teste de status HTTP
+        response = self.client.post(self.salable_url, salable_data, format="json")
+        print("\nTest 6.1: Create Salable_Composition 1 de 3 - Resposta HTTP = 201")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        print(
+            "Test 6.1: Create Salable_Composition 2 de 3 - Quantidade de Salables_Compositions = 2"
+        )
+        self.assertEqual(
+            Salables_Compositions.objects.filter(salable=response.data["id"]).count(), 2
+        )
+
+        # Criando Salables_Composition a partir do endpoint admin-salables_compositions-list
+        salable_composition_data = {
+            "salable": response.data["id"],
+            "input": input2.id,
+            "quantity": 5.9,
+        }
+        response = self.client.post(
+            self.salables_compositions_url, salable_composition_data, format="json"
+        )
+        print("Test 6.1: Create Salable_Composition 3 de 4 - Resposta HTTP = 400")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Criação de um terceiro input para teste posterior
+        input3 = Inputs.objects.create(
+            name="Test Input 3",
+            subcategory=subcategory,
+            price=3.99,
+            quantity=9,
+            unit="l",
+        )
+
+        salable_composition_data = {
+            "salable": 1,
+            "input": input3.id,
+            "quantity": 5.9,
+        }
+        response = self.client.post(
+            self.salables_compositions_url, salable_composition_data, format="json"
+        )
+
+        print("Test 6.1: Create Salable_Composition 4 de 4 - Resposta HTTP = 201")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_6_2_get_salables_compositions(self):
+        # Teste de resposta sem nenhum registro
+        response = self.client.get(self.salables_compositions_url)
+        print("\nTest 6.2: Get Salables_Compositions 1 de 4 - Resposta HTTP = 200")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 6.2: Get Salables_Compositions 2 de 4 - Resposta Vazia")
+        self.assertEqual(response.data["results"]["salables_compositions"], [])
+
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Subcategory", category=category
+        )
+        input1 = Inputs.objects.create(
+            name="Test Input 1",
+            subcategory=subcategory,
+            price=5.5,
+            quantity=4.1,
+            unit="und",
+        )
+        input2 = Inputs.objects.create(
+            name="Test Input 2",
+            subcategory=subcategory,
+            price=7,
+            quantity=5.1,
+            unit="l",
+        )
+
+        # Criando Salables_Composition a partir de um Salable
+        salable_data = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 30,
+            "subcategory": subcategory.id,
+            "inputs": [
+                {
+                    "input": input1.id,
+                    "quantity": 2.1,
+                },
+                {
+                    "input": input2.id,
+                    "quantity": 5,
+                },
+            ],
+        }
+
+        self.client.post(self.salable_url, salable_data, format="json")
+        response = self.client.get(self.salables_compositions_url)
+
+        # Deletando o campo "links" da resposta
+        for i in range(len(response.data["results"]["salables_compositions"])):
+            del response.data["results"]["salables_compositions"][i]["links"]
+
+        print("Test 6.2: Get Salables_Compositions 3 de 4 - Resposta HTTP = 200")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 6.2: Get Salables_Compositions 4 de 4 - GET Salable_Composition")
+        self.assertEqual(response.data["count"], 2)
+
+    def test_6_3_patch_salables_compositions(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Subcategory", category=category
+        )
+        input1 = Inputs.objects.create(
+            name="Test Input 1",
+            subcategory=subcategory,
+            price=5.5,
+            quantity=4.1,
+            unit="und",
+        )
+        input2 = Inputs.objects.create(
+            name="Test Input 2",
+            subcategory=subcategory,
+            price=7,
+            quantity=5.1,
+            unit="l",
+        )
+
+        # Criando Salables_Composition a partir de um Salable
+        salable_data = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 30,
+            "subcategory": subcategory.id,
+            "inputs": [
+                {
+                    "input": input1.id,
+                    "quantity": 2.1,
+                },
+                {
+                    "input": input2.id,
+                    "quantity": 5,
+                },
+            ],
+        }
+
+        self.client.post(self.salable_url, salable_data, format="json")
+
+        # Teste de atualização de um campo
+        salable_composition_url_detail = reverse(
+            "admin-salables_compositions-detail", kwargs={"pk": 1}
+        )
+        new_data = {"quantity": 2}
+        response = self.client.patch(
+            salable_composition_url_detail, new_data, format="json"
+        )
+
+        # Deletando o campo "links" da resposta
+        del response.data["links"]
+
+        print("\nTest 6.3: Patch Salable_Composition 1 de 2 - Resposta HTTP = 200")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        print("Test 6.3: Patch Salable_Composition 2 de 2 - PATCH Salable_Composition")
+        self.assertEqual(
+            response.data,
+            {"id": 1, "salable": 1, "input": input1.id, "quantity": 2},
+        )
+
+    def test_6_4_delete_salables_compositions(self):
+        # Criação de uma nova categoria
+        category = Categorys.objects.create(name="Test Category")
+        # Criação de uma nova subcategoria
+        subcategory = SubCategorys.objects.create(
+            name="Test Subcategory", category=category
+        )
+        input1 = Inputs.objects.create(
+            name="Test Input 1",
+            subcategory=subcategory,
+            price=5.5,
+            quantity=4.1,
+            unit="und",
+        )
+        input2 = Inputs.objects.create(
+            name="Test Input 2",
+            subcategory=subcategory,
+            price=7,
+            quantity=5.1,
+            unit="l",
+        )
+
+        # Criando Salables_Composition a partir de um Salable
+        salable_data = {
+            "name": "New Salable",
+            "description": "New Salable Description",
+            "price": 30,
+            "subcategory": subcategory.id,
+            "inputs": [
+                {
+                    "input": input1.id,
+                    "quantity": 2.1,
+                },
+                {
+                    "input": input2.id,
+                    "quantity": 5,
+                },
+            ],
+        }
+
+        self.client.post(self.salable_url, salable_data, format="json")
+
+        # Teste de exclusão de um registro
+        salable_url_detail = reverse(
+            "admin-salables_compositions-detail", kwargs={"pk": 1}
+        )
+        response = self.client.delete(salable_url_detail)
+        print("\nTest 6.4: Delete Salable_Composition 1 de 1 - Resposta HTTP = 204")
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
