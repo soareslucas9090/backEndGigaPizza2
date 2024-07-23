@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",
     "debug_toolbar",
     "maingigapizza",
+    "admingigapizza",
 ]
 
 MIDDLEWARE = [

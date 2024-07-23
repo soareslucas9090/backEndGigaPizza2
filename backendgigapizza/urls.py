@@ -13,6 +13,7 @@ urlpatterns = [
     path("", RedirectView.as_view(url="/api/schema/swagger/", permanent=True)),
     path("admin/", admin.site.urls),
     path("api/maingigapizza/", include("maingigapizza.urls")),
+    path("app/admin/", include("maingigapizza.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/schema/swagger/",
