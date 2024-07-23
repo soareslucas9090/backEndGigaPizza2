@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title text-center">Login</h3>
+      {% if form.errors %}
+        <div class="alert alert-danger" role="alert">Usuário e/ou senha inválidos. Tente novamente</div>
+      {% endif %}
+
+      {% if next %}
+        {% if user.is_authenticated %}
+          <div class="alert alert-warning" role="alert">Your account doesn't have access to this page. To proceed, please login with an account that has access.</div>
+        {% else %}
+          <div class="alert alert-info" role="alert">Please login to see this page.</div>
+        {% endif %}
+      {% endif %}
+
+      <form method="post" action="{% url 'login-admin' %}">
+        {% csrf_token %}
+        <div class="container text-center">
+          <div class="form-group">
+            <div class="col">
+              <label for="id_username">{{ form.username.label }}</label>
+            </div>
+            <div class="col">{{ form.username }}</div>
+          </div>
+          <div class="form-group">
+            <div class="col">
+              <label for="id_password">{{ form.password.label }}</label>
+            </div>
+            <div class="col">{{ form.password }}</div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+          <input type="hidden" name="next" value="{{ next }}" />
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

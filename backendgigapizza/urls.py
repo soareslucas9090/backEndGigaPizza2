@@ -7,13 +7,16 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from maingigapizza.views.views_public import RedirectUserView
+
 from .views_jwt import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 urlpatterns = [
     path("", RedirectView.as_view(url="/api/schema/swagger/", permanent=True)),
     path("admin/", admin.site.urls),
     path("api/maingigapizza/", include("maingigapizza.urls")),
-    path("app/admin/", include("maingigapizza.urls")),
+    path("redirect/", RedirectUserView.as_view(), name="redirect-login"),
+    path("app/admin/", include("admingigapizza.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/schema/swagger/",

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    {% block title %}
+      <title>Menu Admin</title>
+    {% endblock %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'admingigapizza/css/styles.css' %}" />
+  </head>
+  <body>
+    <div class="container h-100">
+      <div class="d-flex justify-content-center h-100">
+        {% block content %}
+
+        {% endblock %}
+      </div>
+    </div>
+  </body>
+</html>

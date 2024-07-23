@@ -1,0 +1,13 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.card {
+  max-width: 90%;
+  width: 30rem;
+  padding: 2rem;
+  margin: auto;
+}
