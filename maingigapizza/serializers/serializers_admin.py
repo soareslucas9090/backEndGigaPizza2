@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -17,6 +18,7 @@ class CategorysSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
 
@@ -64,6 +66,7 @@ class SubCategorysSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
 
@@ -123,6 +126,7 @@ class InputsSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
 
@@ -184,6 +188,7 @@ class SalablesCompositionsSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
 
@@ -251,6 +256,7 @@ class SalablesSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
 
