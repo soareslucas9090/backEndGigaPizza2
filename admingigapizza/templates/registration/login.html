@@ -4,6 +4,7 @@
   <div class="card">
     <div class="card-body">
       <h3 class="card-title text-center">Login</h3>
+      
       {% if form.errors %}
         <div class="alert alert-danger" role="alert">Usuário e/ou senha inválidos. Tente novamente</div>
       {% endif %}
@@ -18,21 +19,26 @@
 
       <form method="post" action="{% url 'login-admin' %}">
         {% csrf_token %}
+        {% load custom_tags %}
         <div class="container text-center">
-          <div class="form-group">
+          <div class="margin-top form-group">
             <div class="col">
               <label for="id_username">{{ form.username.label }}</label>
             </div>
-            <div class="col">{{ form.username }}</div>
+            <div class="col">{{ form.username|add_class:'form-control' }}</div>
           </div>
-          <div class="form-group">
+          <div class="margin-top form-group">
             <div class="col">
               <label for="id_password">{{ form.password.label }}</label>
             </div>
-            <div class="col">{{ form.password }}</div>
+            <div class="col">{{ form.password|add_class:'form-control' }}</div>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Login</button>
-          <input type="hidden" name="next" value="{{ next }}" />
+          <div class="margin-top">
+            <div class="col">
+              <button type="submit" class="btn btn-primary btn-block btn-width">Login</button>
+              <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+          </div>
         </div>
       </form>
     </div>

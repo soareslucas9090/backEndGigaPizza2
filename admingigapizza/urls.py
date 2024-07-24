@@ -1,9 +1,9 @@
-from django.contrib.auth import views as auth_views
-from django.urls import include, path
+from django.urls import path
 
-from .views import CustomLogoutView
+from .views import CustomLoginView, CustomLogoutView, MenuAdminView
 
 urlpatterns = [
-    path("login/", auth_views.LoginView.as_view(), name="login-admin"),
+    path("login/", CustomLoginView.as_view(), name="login-admin"),
+    path("menu-admin/", MenuAdminView.as_view(), name="menu-admin"),
     path("logout/", CustomLogoutView.as_view(), name="logout-admin"),
 ]

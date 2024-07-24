@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="card-menu">
+    <div class="card-body">
+      <div class="logo-container text-center my-3">
+        <img src="{% static "admingigapizza/imgs/logo.png" %}" alt="Gigapizza" class="img-fluid" style="max-width: 130px;"/>
+      </div>
+      <div class="navbar navbar-expand-lg navbar-light color-header text-white">
+        <div class="container-fluid">
+          <ul class="navbar-nav d-flex w-100 justify-content-between">
+            <li class="nav-item dropdown flex-fill text-center">
+              <a class="nav-link text-white dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Cadastro
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#">Categoria</a></li>
+                <li><a class="dropdown-item" href="#">Subcategoria</a></li>
+                <li><a class="dropdown-item" href="#">Insumos</a></li>
+                <li><a class="dropdown-item" href="#">Itens P/ Venda</a></li>
+                <li><a class="dropdown-item" href="#">Ficha Técnica</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown flex-fill text-center">
+              <a class="nav-link text-white" href="#">Pedidos</a>
+            </li>
+            <li class="nav-item dropdown flex-fill text-center">
+              <a class="nav-link text-white" href="#">Usuários</a>
+            </li>
+            <li class="nav-item dropdown flex-fill text-center">
+              <a class="nav-link text-white" href="#">Financeiro</a>
+            </li>
+            <li class="nav-item dropdown flex-fill text-center">
+              <a class="nav-link text-white" href="#">Configurações</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      {% block menu_admin_content %}
+
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

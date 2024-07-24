@@ -11,3 +11,23 @@ html {
   padding: 2rem;
   margin: auto;
 }
+
+.card-menu {
+  padding: 2rem;
+  width: 100%;
+  height: 98%;
+}
+
+.margin-top {
+  margin-top: 30px;
+}
+
+.btn-width {
+  max-width: 10rem;
+  width: 40%;
+}
+
+.color-header {
+  --bs-bg-opacity: 1;
+  background-color: #bb1d1d;
+}
