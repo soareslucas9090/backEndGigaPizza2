@@ -6,6 +6,8 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
+from maingigapizza.models import Categorys
+
 from .forms import CustomAuthenticationForm
 from .permissions import IsAdmin
 
@@ -37,3 +39,36 @@ def isAdmin(request, toRender):
 class MenuAdminView(View):
     def get(self, request):
         return isAdmin(request, ["menu_admin/base_menu.html"])
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class CategoryListView(View):
+    def get(self, request):
+        query = request.GET.get("q", "")
+        if query:
+            categories = Categorys.objects.filter(name__icontains=query).order_by(
+                "name"
+            )
+        else:
+            categories = Categorys.objects.all().order_by("name")
+
+        return isAdmin(
+            request,
+            ["menu_admin/registers/list_categories.html", {"categories": categories}],
+        )
+
+    def post(self, request):
+        new_name = request.POST.get("category_name")
+
+        category_id = request.POST.get("category_id")
+        if category_id:
+            category = get_object_or_404(Categorys, id=category_id)
+            category.is_active = not category.is_active
+            category.name = new_name
+        else:
+            category_id = request.POST.get("category_name_id")
+            category = get_object_or_404(Categorys, id=category_id)
+            category.name = new_name
+
+        category.save()
+        return redirect("list-categories")
