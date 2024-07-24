@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from maingigapizza.models import Categorys
 
-from .forms import CustomAuthenticationForm
+from .forms import CategoryForm, CustomAuthenticationForm
 from .permissions import IsAdmin
 
 
@@ -58,17 +58,31 @@ class CategoryListView(View):
         )
 
     def post(self, request):
-        new_name = request.POST.get("category_name")
-
         category_id = request.POST.get("category_id")
         if category_id:
             category = get_object_or_404(Categorys, id=category_id)
             category.is_active = not category.is_active
-            category.name = new_name
         else:
+            new_name = request.POST.get("category_name")
             category_id = request.POST.get("category_name_id")
             category = get_object_or_404(Categorys, id=category_id)
             category.name = new_name
 
         category.save()
         return redirect("list-categories")
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class CategoryCreateView(View):
+    def get(self, request):
+        form = CategoryForm()
+        return isAdmin(
+            request, ["menu_admin/registers/create_category.html", {"form": form}]
+        )
+
+    def post(self, request):
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("list-categories")
+        return isAdmin(request, ["admin/forms/create_category.html", {"form": form}])

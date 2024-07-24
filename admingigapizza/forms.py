@@ -12,4 +12,4 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Categorys
-        fields = ["name", "is_active"]
+        fields = ["name"]

@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views import CategoryListView, CustomLoginView, CustomLogoutView, MenuAdminView
+from .views import (
+    CategoryCreateView,
+    CategoryListView,
+    CustomLoginView,
+    CustomLogoutView,
+    MenuAdminView,
+)
 
 urlpatterns = [
     ## To registration users
@@ -13,5 +19,10 @@ urlpatterns = [
         "menu-admin/register/categories/",
         CategoryListView.as_view(),
         name="list-categories",
+    ),
+    path(
+        "menu-admin/register/categories/new/",
+        CategoryCreateView.as_view(),
+        name="create-category",
     ),
 ]

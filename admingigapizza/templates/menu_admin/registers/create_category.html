@@ -1,0 +1,28 @@
+{% extends 'menu_admin/base_menu.html' %}
+{% load static %}
+
+{% block menu_admin_content %}
+  <div class="container mt-4">
+    <h1>Criar Categoria</h1>
+    <div class="d-flex justify-content-between mb-3">
+      <a href="{% url 'list-categories' %}" class="btn btn-primary" style="height: auto; width: auto; max-height: 40px;">Voltar</a>
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Nome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% load custom_tags %}
+            <td>{{ form.name|add_class:'form-control' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="submit" class="btn btn-primary">Salvar</button>
+    </form>
+  </div>
+{% endblock %}
