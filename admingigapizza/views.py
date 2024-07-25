@@ -54,7 +54,10 @@ class CategoryListView(View):
 
         return isAdmin(
             request,
-            ["menu_admin/registers/list_categories.html", {"categories": categories}],
+            [
+                "menu_admin/registers/categories/list_categories.html",
+                {"categories": categories},
+            ],
         )
 
     def post(self, request):
@@ -77,7 +80,8 @@ class CategoryCreateView(View):
     def get(self, request):
         form = CategoryForm()
         return isAdmin(
-            request, ["menu_admin/registers/create_category.html", {"form": form}]
+            request,
+            ["menu_admin/registers/categories/create_category.html", {"form": form}],
         )
 
     def post(self, request):
@@ -85,4 +89,6 @@ class CategoryCreateView(View):
         if form.is_valid():
             form.save()
             return redirect("list-categories")
-        return isAdmin(request, ["admin/forms/create_category.html", {"form": form}])
+        return isAdmin(
+            request, ["admin/forms/categories/create_category.html", {"form": form}]
+        )
