@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
-from maingigapizza.models import Categorys
+from maingigapizza.models import Categories
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -11,5 +11,5 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 class CategoryForm(forms.ModelForm):
     class Meta:
-        model = Categorys
-        fields = ["name"]
+        model = Categories
+        fields = ["name", "type"]

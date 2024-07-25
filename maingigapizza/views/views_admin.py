@@ -7,14 +7,22 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Categorys, Inputs, Salables, Salables_Compositions, SubCategorys
+from ..models import (
+    Categories,
+    CategoryTypes,
+    Inputs,
+    Salables,
+    Salables_Compositions,
+    SubCategories,
+)
 from ..permissions import IsAdmin, IsAdminToDocumentation, IsAnonymousUser
 from ..serializers.serializers_admin import (
-    CategorysSerializer,
+    CategoriesSerializer,
+    CategoryTypesSerializer,
     InputsSerializer,
     SalablesCompositionsSerializer,
     SalablesSerializer,
-    SubCategorysSerializer,
+    SubCategoriesSerializer,
 )
 
 
@@ -22,10 +30,10 @@ class DefaultNumberPagination(PageNumberPagination):
     page_size = 10
 
 
-@extend_schema(tags=["Admin.Categories"])
-class CategorysViewSet(ModelViewSet):
-    queryset = Categorys.objects.all()
-    serializer_class = CategorysSerializer
+@extend_schema(tags=["Admin.CategoriesTypes"])
+class CategoryTypesViewSet(ModelViewSet):
+    queryset = CategoryTypes.objects.all()
+    serializer_class = CategoryTypesSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
         IsAdmin,
@@ -36,15 +44,11 @@ class CategorysViewSet(ModelViewSet):
         queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
-        category_id = self.request.query_params.get("category_id")
 
-        if category_id and category_id.isnumeric():
-            return queryset.filter(id=category_id)
+        type_name = self.request.query_params.get("type")
 
-        category_name = self.request.query_params.get("category")
-
-        if category_name:
-            return queryset.filter(name__icontains=category_name)
+        if type_name:
+            return queryset.filter(name__icontains=type_name)
 
         is_active_value = self.request.query_params.get("is_active")
 
@@ -64,12 +68,120 @@ class CategorysViewSet(ModelViewSet):
     @extend_schema(
         parameters=[
             OpenApiParameter(
-                name="category_id",
-                type=OpenApiTypes.INT,
-                description="Filter by category id",
+                name="type",
+                type=OpenApiTypes.STR,
+                description="Filter by category type name",
                 required=False,
                 location=OpenApiParameter.QUERY,
             ),
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                description="Filter by active state",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+
+        serializer = self.get_serializer(page, many=True)
+        serializer_hateoas = {"category_types": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                for i in range(len(serializer_hateoas["category_types"])):
+                    del serializer_hateoas["category_types"][i]["links"]
+
+        return self.get_paginated_response(serializer_hateoas)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="links",
+                type=OpenApiTypes.BOOL,
+                description="Show or not show links from the HATEOAS method (choose false for a lighter answer, but without links)",
+                required=False,
+                location=OpenApiParameter.QUERY,
+            ),
+        ],
+    )
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        serializer_hateoas = {"category_type": serializer.data}
+        links = self.request.query_params.get("links")
+
+        if links:
+            if links.lower() == "false":
+                links = False
+                del serializer_hateoas["category_type"]["links"]
+
+        return Response(serializer_hateoas)
+
+    def get_permissions(self):
+        if self.request.method in ["PATCH", "DELETE", "POST"]:
+            permission = IsAdminToDocumentation()
+            if permission.has_permission(self.request, self):
+                raise PermissionDenied()
+
+        return super().get_permissions()
+
+
+@extend_schema(tags=["Admin.Categories"])
+class CategoriesViewSet(ModelViewSet):
+    queryset = Categories.objects.all()
+    serializer_class = CategoriesSerializer
+    pagination_class = DefaultNumberPagination
+    permission_classes = [
+        IsAdmin,
+    ]
+    http_method_names = ["get", "head", "patch", "delete", "post"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset().order_by("name")
+
+        # Regras de query_params
+
+        category_name = self.request.query_params.get("category")
+
+        if category_name:
+            return queryset.filter(name__icontains=category_name)
+
+        type_id = self.request.query_params.get("type_id")
+
+        if type_id and type_id.isnumeric():
+            return queryset.filter(type=type_id)
+
+        is_active_value = self.request.query_params.get("is_active")
+
+        if is_active_value:
+
+            if is_active_value.lower() == "false":
+                is_active_value = False
+                return queryset.filter(is_active=is_active_value)
+
+            elif is_active_value.lower() == "true":
+                is_active_value = True
+                return queryset.filter(is_active=is_active_value)
+        # Regras de query_params
+
+        return queryset
+
+    @extend_schema(
+        parameters=[
             OpenApiParameter(
                 name="category",
                 type=OpenApiTypes.STR,
@@ -144,9 +256,9 @@ class CategorysViewSet(ModelViewSet):
 
 
 @extend_schema(tags=["Admin.SubCategories"])
-class SubCategorysViewSet(ModelViewSet):
-    queryset = SubCategorys.objects.select_related("category").all()
-    serializer_class = SubCategorysSerializer
+class SubCategoriesViewSet(ModelViewSet):
+    queryset = SubCategories.objects.select_related("category").all()
+    serializer_class = SubCategoriesSerializer
     pagination_class = DefaultNumberPagination
     permission_classes = [
         IsAdmin,
@@ -157,10 +269,6 @@ class SubCategorysViewSet(ModelViewSet):
         queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
-        subcategory_id = self.request.query_params.get("subcategory_id")
-
-        if subcategory_id and subcategory_id.isnumeric():
-            return queryset.filter(id=subcategory_id)
 
         subcategory_name = self.request.query_params.get("subcategory")
 
@@ -189,13 +297,6 @@ class SubCategorysViewSet(ModelViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name="subcategory_id",
-                type=OpenApiTypes.INT,
-                description="Filter by subcategory id",
-                required=False,
-                location=OpenApiParameter.QUERY,
-            ),
             OpenApiParameter(
                 name="subcategory",
                 type=OpenApiTypes.STR,
@@ -290,10 +391,6 @@ class InputsViewSet(ModelViewSet):
         queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
-        input_id = self.request.query_params.get("input_id")
-
-        if input_id and input_id.isnumeric():
-            return queryset.filter(id=input_id)
 
         input_name = self.request.query_params.get("input")
 
@@ -327,13 +424,6 @@ class InputsViewSet(ModelViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name="input_id",
-                type=OpenApiTypes.INT,
-                description="Filter by input id",
-                required=False,
-                location=OpenApiParameter.QUERY,
-            ),
             OpenApiParameter(
                 name="input",
                 type=OpenApiTypes.STR,
@@ -457,10 +547,6 @@ class SalablesViewSet(ModelViewSet):
         queryset = super().get_queryset().order_by("name")
 
         # Regras de query_params
-        salable_id = self.request.query_params.get("salable_id")
-
-        if salable_id and salable_id.isnumeric():
-            return queryset.filter(id=salable_id)
 
         salable_name = self.request.query_params.get("salable")
 
@@ -494,13 +580,6 @@ class SalablesViewSet(ModelViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name="salable_id",
-                type=OpenApiTypes.INT,
-                description="Filter by salable id",
-                required=False,
-                location=OpenApiParameter.QUERY,
-            ),
             OpenApiParameter(
                 name="salable",
                 type=OpenApiTypes.STR,
@@ -600,11 +679,6 @@ class SalablesCompositionsViewSet(ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset().order_by("id")
 
-        salable_id = self.request.query_params.get("salable_id")
-
-        if salable_id and salable_id.isnumeric():
-            return queryset.filter(id=salable_id)
-
         salable_name = self.request.query_params.get("salable")
 
         if salable_name:
@@ -624,13 +698,6 @@ class SalablesCompositionsViewSet(ModelViewSet):
 
     @extend_schema(
         parameters=[
-            OpenApiParameter(
-                name="salable_id",
-                type=OpenApiTypes.INT,
-                description="Filter by salable id",
-                required=False,
-                location=OpenApiParameter.QUERY,
-            ),
             OpenApiParameter(
                 name="salable",
                 type=OpenApiTypes.STR,

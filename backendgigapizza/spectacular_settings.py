@@ -10,6 +10,10 @@ SPECTACULAR_SETTINGS = {
             "description": "Salables related endpoints to admin users",
         },
         {
+            "name": "Admin.CategoriesTypes",
+            "description": "Categories Types related endpoints to admin users",
+        },
+        {
             "name": "Admin.Categories",
             "description": "Categories related endpoints to admin users",
         },

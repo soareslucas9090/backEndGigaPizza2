@@ -9,7 +9,7 @@ from django.contrib.auth.models import (
 from django.db import models
 
 
-class Categorys(models.Model):
+class CategoryTypes(models.Model):
     name = models.CharField(max_length=255, null=False, unique=True)
     is_active = models.BooleanField(default=True, null=False)
 
@@ -17,10 +17,24 @@ class Categorys(models.Model):
         return f"{self.name}"
 
 
-class SubCategorys(models.Model):
+class Categories(models.Model):
+    name = models.CharField(max_length=255, null=False, unique=True)
+    type = models.ForeignKey(
+        CategoryTypes,
+        related_name="type_category",
+        on_delete=models.CASCADE,
+        null=False,
+    )
+    is_active = models.BooleanField(default=True, null=False)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class SubCategories(models.Model):
     name = models.CharField(max_length=255, null=False, unique=False)
     category = models.ForeignKey(
-        Categorys,
+        Categories,
         related_name="principal_category",
         on_delete=models.CASCADE,
         null=False,
@@ -46,7 +60,7 @@ class Inputs(models.Model):
     quantity = models.FloatField(null=False)
     unit = models.CharField(max_length=3, null=False)
     subcategory = models.ForeignKey(
-        SubCategorys,
+        SubCategories,
         on_delete=models.CASCADE,
         related_name="inputs_subcategory",
         null=False,
@@ -62,7 +76,7 @@ class Salables(models.Model):
     description = models.TextField(blank=True, null=True)
     price = models.FloatField(null=False)
     subcategory = models.ForeignKey(
-        SubCategorys, on_delete=models.CASCADE, related_name="subcategory", null=False
+        SubCategories, on_delete=models.CASCADE, related_name="subcategory", null=False
     )
     is_active = models.BooleanField(default=True, null=False)
 

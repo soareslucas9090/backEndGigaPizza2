@@ -90,8 +90,9 @@ Todos os `assert`s do código possuem um print nomeando o que está testando e q
 
 Atualmente os testes cobrem os seguintes grupos de endpoints (métodos *GET*, *POST*, *PATCH* e *DELETE*):
 - **Auth**
-- **Admin.Categorys** (somente método *GET* para o usuário admin2documentation)
-- **Admin.Subcategorys** (somente método *GET* para o usuário admin2documentation)
+- **Admin.CategoryTypes** (somente método *GET* para o usuário admin2documentation)
+- **Admin.Categories** (somente método *GET* para o usuário admin2documentation)
+- **Admin.Subcategories** (somente método *GET* para o usuário admin2documentation)
 - **Admin.Inputs** (somente método *GET* para o usuário admin2documentation)
 - **Admin.Salables** (somente método *GET* para o usuário admin2documentation)
 - **Admin.Salables_Compositions** (somente método *GET* para o usuário admin2documentation)

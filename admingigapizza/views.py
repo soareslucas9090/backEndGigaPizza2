@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
-from maingigapizza.models import Categorys
+from maingigapizza.models import Categories
 
 from .forms import CategoryForm, CustomAuthenticationForm
 from .permissions import IsAdmin
@@ -46,11 +46,11 @@ class CategoryListView(View):
     def get(self, request):
         query = request.GET.get("q", "")
         if query:
-            categories = Categorys.objects.filter(name__icontains=query).order_by(
+            categories = Categories.objects.filter(name__icontains=query).order_by(
                 "name"
             )
         else:
-            categories = Categorys.objects.all().order_by("name")
+            categories = Categories.objects.all().order_by("name")
 
         return isAdmin(
             request,
@@ -63,12 +63,12 @@ class CategoryListView(View):
     def post(self, request):
         category_id = request.POST.get("category_id")
         if category_id:
-            category = get_object_or_404(Categorys, id=category_id)
+            category = get_object_or_404(Categories, id=category_id)
             category.is_active = not category.is_active
         else:
             new_name = request.POST.get("category_name")
             category_id = request.POST.get("category_name_id")
-            category = get_object_or_404(Categorys, id=category_id)
+            category = get_object_or_404(Categories, id=category_id)
             category.name = new_name
 
         category.save()

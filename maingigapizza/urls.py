@@ -2,20 +2,22 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from .views.views_admin import (
-    CategorysViewSet,
+    CategoriesViewSet,
+    CategoryTypesViewSet,
     InputsViewSet,
     SalablesCompositionsViewSet,
     SalablesViewSet,
-    SubCategorysViewSet,
+    SubCategoriesViewSet,
 )
 from .views.views_public import CreateUserViewSet, ListSalablesViewSet
 
 gigapizza_router_admin = SimpleRouter()
+gigapizza_router_admin.register(r"types", CategoryTypesViewSet, basename="admin-types")
 gigapizza_router_admin.register(
-    r"categories", CategorysViewSet, basename="admin-categories"
+    r"categories", CategoriesViewSet, basename="admin-categories"
 )
 gigapizza_router_admin.register(
-    r"subcategories", SubCategorysViewSet, basename="admin-subcategories"
+    r"subcategories", SubCategoriesViewSet, basename="admin-subcategories"
 )
 gigapizza_router_admin.register(r"inputs", InputsViewSet, basename="admin-inputs")
 gigapizza_router_admin.register(r"salables", SalablesViewSet, basename="admin-salables")

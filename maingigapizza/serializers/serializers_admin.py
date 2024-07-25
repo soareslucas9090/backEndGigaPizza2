@@ -2,15 +2,68 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
-from ..models import Categorys, Inputs, Salables, Salables_Compositions, SubCategorys
+from ..models import (
+    Categories,
+    CategoryTypes,
+    Inputs,
+    Salables,
+    Salables_Compositions,
+    SubCategories,
+)
 
 
-class CategorysSerializer(serializers.ModelSerializer):
+class CategoryTypesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Categorys
+        model = CategoryTypes
         fields = (
             "id",
             "name",
+            "is_active",
+            "links",
+        )
+
+    # Inserção de hiperlinks na resposta
+    links = serializers.SerializerMethodField(read_only=True)
+
+    @extend_schema_field(serializers.DictField())
+    def get_links(self, obj):
+        request = self.context["request"]
+
+        links = {}
+
+        # Diferentes links para caso de LIST e RETRIEVE
+
+        if self.context["view"].kwargs:
+            links.update({"list": reverse("admin-types-list", request=request)})
+
+        else:
+            links.update(
+                {
+                    "self": reverse(
+                        "admin-types-detail",
+                        kwargs={"pk": obj.pk},
+                        request=request,
+                    )
+                }
+            )
+
+        links.update(
+            {
+                "categories": request.build_absolute_uri(
+                    reverse("admin-categories-list") + f"?type_id={obj.pk}"
+                )
+            }
+        )
+        return links
+
+
+class CategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categories
+        fields = (
+            "id",
+            "name",
+            "type",
             "is_active",
             "links",
         )
@@ -42,17 +95,22 @@ class CategorysSerializer(serializers.ModelSerializer):
 
         links.update(
             {
+                "type": reverse(
+                    "admin-types-detail",
+                    kwargs={"pk": obj.type.pk},
+                    request=request,
+                ),
                 "subcategories": request.build_absolute_uri(
                     reverse("admin-subcategories-list") + f"?category_id={obj.pk}"
-                )
+                ),
             }
         )
         return links
 
 
-class SubCategorysSerializer(serializers.ModelSerializer):
+class SubCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SubCategorys
+        model = SubCategories
         fields = (
             "id",
             "name",
@@ -61,7 +119,7 @@ class SubCategorysSerializer(serializers.ModelSerializer):
             "links",
         )
 
-    category = serializers.PrimaryKeyRelatedField(queryset=Categorys.objects.all())
+    category = serializers.PrimaryKeyRelatedField(queryset=Categories.objects.all())
 
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
@@ -90,7 +148,7 @@ class SubCategorysSerializer(serializers.ModelSerializer):
         links.update(
             {
                 "category": reverse(
-                    "admin-subcategories-detail",
+                    "admin-categories-detail",
                     kwargs={"pk": obj.category.pk},
                     request=request,
                 ),
@@ -120,7 +178,7 @@ class InputsSerializer(serializers.ModelSerializer):
         )
 
     subcategory = serializers.PrimaryKeyRelatedField(
-        queryset=SubCategorys.objects.all()
+        queryset=SubCategories.objects.all()
     )
 
     # Inserção de hiperlinks na resposta
@@ -249,7 +307,7 @@ class SalablesSerializer(serializers.ModelSerializer):
         ]
 
     subcategory = serializers.PrimaryKeyRelatedField(
-        queryset=SubCategorys.objects.all()
+        queryset=SubCategories.objects.all()
     )
     inputs = SalablesCompositionsToAdd(many=True, write_only=True)
 
