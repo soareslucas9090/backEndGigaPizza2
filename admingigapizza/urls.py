@@ -8,6 +8,8 @@ from .views import (
     CustomLoginView,
     CustomLogoutView,
     MenuAdminView,
+    SubcategoryCreateView,
+    SubcategoryListView,
 )
 
 urlpatterns = [
@@ -17,6 +19,18 @@ urlpatterns = [
     ## Admin menu base
     path("menu-admin/", MenuAdminView.as_view(), name="menu-admin"),
     ## Registers
+    # Types
+    path(
+        "menu-admin/register/types/",
+        CategoryTypeListView.as_view(),
+        name="list-types",
+    ),
+    path(
+        "menu-admin/register/types/new/",
+        CategoryTypeCreateView.as_view(),
+        name="create-type",
+    ),
+    # Categories
     path(
         "menu-admin/register/categories/",
         CategoryListView.as_view(),
@@ -27,14 +41,15 @@ urlpatterns = [
         CategoryCreateView.as_view(),
         name="create-category",
     ),
+    # Subcategories
     path(
-        "menu-admin/register/types/",
-        CategoryTypeListView.as_view(),
-        name="list-types",
+        "menu-admin/register/subcategories/",
+        SubcategoryListView.as_view(),
+        name="list-subcategories",
     ),
     path(
-        "menu-admin/register/types/new/",
-        CategoryTypeCreateView.as_view(),
-        name="create-type",
+        "menu-admin/register/subcategories/new/",
+        SubcategoryCreateView.as_view(),
+        name="create-subcategory",
     ),
 ]

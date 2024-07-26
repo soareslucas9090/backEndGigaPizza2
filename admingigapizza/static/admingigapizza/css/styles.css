@@ -31,3 +31,22 @@ html {
   --bs-bg-opacity: 1;
   background-color: #bb1d1d;
 }
+
+.checkbox-align {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.select-fk {
+  min-width: 120px;
+  width: 15%;
+}
+
+.size-form-control {
+  width: 50%;
+  max-width: fit-content;
+}
+
+.size-CatTyp {
+  width: 15%;
+}

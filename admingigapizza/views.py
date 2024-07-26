@@ -6,9 +6,14 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
-from maingigapizza.models import Categories, CategoryTypes
+from maingigapizza.models import Categories, CategoryTypes, SubCategories
 
-from .forms import CategoryForm, CategoryTypeForm, CustomAuthenticationForm
+from .forms import (
+    CategoryForm,
+    CategoryTypeForm,
+    CustomAuthenticationForm,
+    SubCategoryForm,
+)
 from .permissions import IsAdmin
 
 
@@ -140,4 +145,61 @@ class CategoryCreateView(View):
             return redirect("list-categories")
         return isAdmin(
             request, ["admin/forms/categories/create_category.html", {"form": form}]
+        )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SubcategoryListView(View):
+    def get(self, request):
+        query = request.GET.get("q", "")
+        if query:
+            subcategories = SubCategories.objects.filter(
+                name__icontains=query
+            ).order_by("name")
+        else:
+            subcategories = SubCategories.objects.all().order_by("name")
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/subcategories/list_subcategories.html",
+                {"subcategories": subcategories},
+            ],
+        )
+
+    def post(self, request):
+        subcategory_id = request.POST.get("subcategory_id")
+        if subcategory_id:
+            subcategory = get_object_or_404(SubCategories, id=subcategory_id)
+            subcategory.is_active = not subcategory.is_active
+        else:
+            new_name = request.POST.get("subcategory_name")
+            subcategory_id = request.POST.get("subcategory_name_id")
+            subcategory = get_object_or_404(SubCategories, id=subcategory_id)
+            subcategory.name = new_name
+
+        subcategory.save()
+        return redirect("list-subcategories")
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SubcategoryCreateView(View):
+    def get(self, request):
+        form = SubCategoryForm()
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/subcategories/create_subcategory.html",
+                {"form": form},
+            ],
+        )
+
+    def post(self, request):
+        form = SubCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("list-subcategories")
+        return isAdmin(
+            request,
+            ["admin/forms/subcategories/create_subcategory.html", {"form": form}],
         )

@@ -5,10 +5,10 @@
 <div class="container mt-4">
   <h1>Tipos de Categorias</h1>
   <div class="d-flex justify-content-between mb-3">
-    <form method="GET" class="form-control" style="width: 50%; max-width: fit-content;">
+    <form method="GET" class="form-control size-form-control">
       <div class="row g-3 align-items-center">
         <div class="col-auto">
-          <input type="text" name="q" class="form-control" placeholder="Buscar categoria" value="{{ query }}">
+          <input type="text" name="q" class="form-control" placeholder="Buscar tipo de categoria" value="{{ query }}">
         </div>
         <div class="col-auto">
           <button type="submit" class="btn btn-primary ml-2">Buscar</button>
@@ -35,7 +35,7 @@
           </td>
         </form>
         <form method="POST" action="{% url 'list-types' %}">
-          <td>
+          <td class="checkbox-align">
             {% csrf_token %}
             <input type="hidden" name="type_id" value="{{ type.id }}">
             <input type="checkbox" onchange="this.form.submit();" {% if type.is_active %}checked{% endif %}>

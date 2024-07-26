@@ -3,14 +3,14 @@
 
 {% block menu_admin_content %}
   <div class="container mt-4">
-    <h1>Criar Categoria</h1>
+    <h1>Criar Subcategoria</h1>
     <form method="POST">
       {% csrf_token %}
       <table class="table table-bordered">
         <thead>
           <tr>
             <th>Nome</th>
-            <th>Tipo</th>
+            <th>Categoria</th>
           </tr>
         </thead>
         <tbody>
@@ -22,7 +22,7 @@
         </tbody>
       </table>
       <button type="submit" class="btn btn-primary">Salvar</button>
-      <a href="{% url 'list-categories' %}" class="btn btn-primary">Voltar</a>
+      <a href="{% url 'list-subcategories' %}" class="btn btn-primary">Voltar</a>
     </form>
   </div>
 {% endblock %}

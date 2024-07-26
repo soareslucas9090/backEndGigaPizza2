@@ -4,9 +4,6 @@
 {% block menu_admin_content %}
   <div class="container mt-4">
     <h1>Criar Tipo de Categoria</h1>
-    <div class="d-flex justify-content-between mb-3">
-      <a href="{% url 'list-types' %}" class="btn btn-primary" style="height: auto; width: auto; max-height: 40px;">Voltar</a>
-    </div>
     <form method="POST">
       {% csrf_token %}
       <table class="table table-bordered">
@@ -23,6 +20,7 @@
         </tbody>
       </table>
       <button type="submit" class="btn btn-primary">Salvar</button>
+      <a href="{% url 'list-categories' %}" class="btn btn-primary">Voltar</a>
     </form>
   </div>
 {% endblock %}
