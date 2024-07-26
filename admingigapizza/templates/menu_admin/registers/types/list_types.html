@@ -1,0 +1,49 @@
+{% extends 'menu_admin/base_menu.html' %}
+{% load static %}
+
+{% block menu_admin_content %}
+<div class="container mt-4">
+  <h1>Tipos de Categorias</h1>
+  <div class="d-flex justify-content-between mb-3">
+    <form method="GET" class="form-control" style="width: 50%; max-width: fit-content;">
+      <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <input type="text" name="q" class="form-control" placeholder="Buscar categoria" value="{{ query }}">
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary ml-2">Buscar</button>
+        </div>
+      </div>
+    </form>
+    <a href="{% url "create-type" %}" class="btn btn-primary" style="height: auto; width: auto; max-height: 60px;">Adicionar Tipo de Categoria +</a>
+  </div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th style="width: 60px;">Ativo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for type in types %}
+      <tr>
+        <form method="POST" action="{% url 'list-types' %}">
+          {% csrf_token %}
+          <td>
+            <input type="text" name="type_name" class="form-control" value="{{ type.name }}">
+            <input type="hidden" name="type_name_id" value="{{ type.id }}">
+          </td>
+        </form>
+        <form method="POST" action="{% url 'list-types' %}">
+          <td>
+            {% csrf_token %}
+            <input type="hidden" name="type_id" value="{{ type.id }}">
+            <input type="checkbox" onchange="this.form.submit();" {% if type.is_active %}checked{% endif %}>
+          </td>
+        </form>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

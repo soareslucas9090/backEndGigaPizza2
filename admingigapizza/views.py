@@ -6,9 +6,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
-from maingigapizza.models import Categories
+from maingigapizza.models import Categories, CategoryTypes
 
-from .forms import CategoryForm, CustomAuthenticationForm
+from .forms import CategoryForm, CategoryTypeForm, CustomAuthenticationForm
 from .permissions import IsAdmin
 
 
@@ -39,6 +39,55 @@ def isAdmin(request, toRender):
 class MenuAdminView(View):
     def get(self, request):
         return isAdmin(request, ["menu_admin/base_menu.html"])
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class CategoryTypeListView(View):
+    def get(self, request):
+        query = request.GET.get("q", "")
+        if query:
+            types = CategoryTypes.objects.filter(name__icontains=query).order_by("name")
+        else:
+            types = CategoryTypes.objects.all().order_by("name")
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/types/list_types.html",
+                {"types": types},
+            ],
+        )
+
+    def post(self, request):
+        type_id = request.POST.get("type_id")
+        if type_id:
+            type = get_object_or_404(CategoryTypes, id=type_id)
+            type.is_active = not type.is_active
+        else:
+            new_name = request.POST.get("type_name")
+            type_id = request.POST.get("type_name_id")
+            type = get_object_or_404(Categories, id=type_id)
+            type.name = new_name
+
+        type.save()
+        return redirect("list-types")
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class CategoryTypeCreateView(View):
+    def get(self, request):
+        form = CategoryTypeForm()
+        return isAdmin(
+            request,
+            ["menu_admin/registers/types/create_type.html", {"form": form}],
+        )
+
+    def post(self, request):
+        form = CategoryTypeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("list-types")
+        return isAdmin(request, ["admin/forms/types/create_type.html", {"form": form}])
 
 
 @method_decorator(csrf_protect, name="dispatch")
