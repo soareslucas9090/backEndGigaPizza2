@@ -23,7 +23,7 @@
                   <a class="dropdown-item" href="{% url 'list-subcategories' %}">Subcategoria</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">Insumos</a>
+                  <a class="dropdown-item" href="{% url 'list-inputs' %}">Insumos</a>
                 </li>
                 <li>
                   <a class="dropdown-item" href="#">Itens P/ Venda</a>
@@ -50,6 +50,8 @@
       </div>
       {% block menu_admin_content %}
 
+      {% endblock %}
+      {% block extra_js %}
       {% endblock %}
     </div>
   </div>

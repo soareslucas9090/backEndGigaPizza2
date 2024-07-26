@@ -6,12 +6,13 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
-from maingigapizza.models import Categories, CategoryTypes, SubCategories
+from maingigapizza.models import Categories, CategoryTypes, Inputs, SubCategories
 
 from .forms import (
     CategoryForm,
     CategoryTypeForm,
     CustomAuthenticationForm,
+    InputForm,
     SubCategoryForm,
 )
 from .permissions import IsAdmin
@@ -202,4 +203,59 @@ class SubcategoryCreateView(View):
         return isAdmin(
             request,
             ["admin/forms/subcategories/create_subcategory.html", {"form": form}],
+        )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class InputListView(View):
+    def get(self, request):
+        query = request.GET.get("q", "")
+        if query:
+            inputs = Inputs.objects.filter(name__icontains=query).order_by("name")
+        else:
+            inputs = Inputs.objects.all().order_by("name")
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/inputs/list_inputs.html",
+                {"inputs": inputs},
+            ],
+        )
+
+    def post(self, request):
+        input_id = request.POST.get("input_id")
+        if input_id:
+            input = get_object_or_404(Inputs, id=input_id)
+            input.is_active = not input.is_active
+        else:
+            new_name = request.POST.get("input_name")
+            input_id = request.POST.get("input_name_id")
+            input = get_object_or_404(Inputs, id=input_id)
+            input.name = new_name
+
+        input.save()
+        return redirect("list-inputs")
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class InputCreateView(View):
+    def get(self, request):
+        form = InputForm()
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/inputs/create_input.html",
+                {"form": form},
+            ],
+        )
+
+    def post(self, request):
+        form = InputForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("list-inputs")
+        return isAdmin(
+            request,
+            ["admin/forms/inputs/create_input.html", {"form": form}],
         )

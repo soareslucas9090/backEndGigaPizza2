@@ -1,0 +1,43 @@
+{% extends 'menu_admin/base_menu.html' %}
+{% load static %}
+
+{% block menu_admin_content %}
+  <div class="container mt-4">
+    <h1>Criar Insumo</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Unidade</th>
+            <th>Subcategoria</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% load custom_tags %}
+            <td>{{ form.name|add_class:'form-control' }}</td>
+            <td class="size-CategTypePrice">
+              <div class="input-group">
+                <span class="input-group-text">R$</span>
+                {{ form.price|add_class:'form-control' }}
+              </div>
+            </td>
+            <td class="size-Quant">{{ form.quantity|add_class:'form-control' }}</td>
+            <td class="select-fk">{{ form.unit|add_class:'form-select' }}</td>
+            <td class="select-fk">{{ form.subcategory|add_class:'form-select' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <a href="{% url 'list-subcategories' %}" class="btn btn-primary">Voltar</a>
+    </form>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'admingigapizza/js/form_input_price.js' %}"></script>
+{% endblock %}

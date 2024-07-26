@@ -47,6 +47,10 @@ html {
   max-width: fit-content;
 }
 
-.size-CatTyp {
+.size-CategTypePrice {
   width: 15%;
+}
+
+.size-Quant {
+  width: 12%;
 }
