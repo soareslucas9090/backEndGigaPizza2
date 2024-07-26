@@ -18,6 +18,9 @@
         </thead>
         <tbody>
           <tr>
+            {% if form.instance.id %}
+              <input type="hidden" name="edit_id" value="{{ form.instance.id }}" />
+            {% endif %}
             {% load custom_tags %}
             <td>{{ form.name|add_class:'form-control' }}</td>
             <td class="size-CategTypePrice">

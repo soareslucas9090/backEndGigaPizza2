@@ -54,3 +54,8 @@ html {
 .size-Quant {
   width: 12%;
 }
+
+.size-ActiveActions {
+  width: 60px;
+  text-align: center;
+}

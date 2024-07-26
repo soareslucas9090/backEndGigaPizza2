@@ -25,7 +25,8 @@
         <th>Quantidade</th>
         <th>Unidade</th>
         <th>Subcategoria</th>
-        <th style="width: 60px;">Ativo</th>
+        <th class="size-ActiveActions">Ativo</th>
+        <th class="size-ActiveActions">Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -64,6 +65,9 @@
             <input type="checkbox" onchange="this.form.submit();" {% if input.is_active %}checked{% endif %}>
           </td>
         </form>
+        <td>
+          <a href="{% url 'create-input' %}?edit_id={{ input.id }}" class="btn btn-secondary">Editar</a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

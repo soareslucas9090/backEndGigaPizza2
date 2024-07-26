@@ -20,11 +20,24 @@ class CategoryForm(forms.ModelForm):
         model = Categories
         fields = ["name", "type"]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["type"].queryset = CategoryTypes.objects.filter(is_active=True)
+
 
 class SubCategoryForm(forms.ModelForm):
     class Meta:
         model = SubCategories
         fields = ["name", "category"]
+
+    def __init__(self, *args, **kwargs):
+        category_type = kwargs.pop("category_type", None)
+        super().__init__(*args, **kwargs)
+        if category_type is not None:
+            self.fields["category"].queryset = Categories.objects.filter(
+                type=category_type, is_active=True
+            )
 
 
 class InputForm(forms.ModelForm):
@@ -32,3 +45,10 @@ class InputForm(forms.ModelForm):
         model = Inputs
         fields = ["name", "price", "quantity", "unit", "subcategory"]
         widgets = {"unit": forms.Select(choices=Inputs.UNITS)}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["subcategory"].queryset = SubCategories.objects.filter(
+            category__type__name="Insumos", is_active=True
+        )

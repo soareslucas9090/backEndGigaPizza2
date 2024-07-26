@@ -22,7 +22,8 @@
       <tr>
         <th>Nome</th>
         <th>Categoria</th>
-        <th style="width: 60px;">Ativo</th>
+        <th class="size-ActiveActions">Ativo</th>
+        <th class="size-ActiveActions">Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -45,6 +46,9 @@
             <input type="checkbox" onchange="this.form.submit();" {% if subcategory.is_active %}checked{% endif %}>
           </td>
         </form>
+        <td>
+          <a href="{% url 'create-subcategory' %}?edit_id={{ subcategory.id }}" class="btn btn-secondary">Editar</a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

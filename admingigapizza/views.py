@@ -90,9 +90,11 @@ class CategoryTypeCreateView(View):
 
     def post(self, request):
         form = CategoryTypeForm(request.POST)
+
         if form.is_valid():
             form.save()
             return redirect("list-types")
+
         return isAdmin(request, ["admin/forms/types/create_type.html", {"form": form}])
 
 
@@ -186,7 +188,16 @@ class SubcategoryListView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class SubcategoryCreateView(View):
     def get(self, request):
-        form = SubCategoryForm()
+        edit_id = request.GET.get("edit_id")
+
+        if edit_id:
+            subcategory = get_object_or_404(SubCategories, id=edit_id)
+            form = SubCategoryForm(
+                instance=subcategory, category_type=subcategory.category.type
+            )
+        else:
+            form = SubCategoryForm()
+
         return isAdmin(
             request,
             [
@@ -198,6 +209,14 @@ class SubcategoryCreateView(View):
     def post(self, request):
         form = SubCategoryForm(request.POST)
         if form.is_valid():
+            edit_id = request.POST.get("edit_id")
+            if edit_id:
+                subcategory = get_object_or_404(SubCategories, id=edit_id)
+                form = SubCategoryForm(request.POST, instance=subcategory)
+                if form.is_valid():
+                    form.save()
+                    return redirect("list-subcategories")
+
             form.save()
             return redirect("list-subcategories")
         return isAdmin(
@@ -241,7 +260,14 @@ class InputListView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class InputCreateView(View):
     def get(self, request):
-        form = InputForm()
+        edit_id = request.GET.get("edit_id")
+
+        if edit_id:
+            input = get_object_or_404(Inputs, id=edit_id)
+            form = InputForm(instance=input)
+        else:
+            form = InputForm()
+
         return isAdmin(
             request,
             [
@@ -253,8 +279,17 @@ class InputCreateView(View):
     def post(self, request):
         form = InputForm(request.POST)
         if form.is_valid():
+            edit_id = request.POST.get("edit_id")
+            if edit_id:
+                input = get_object_or_404(Inputs, id=edit_id)
+                form = InputForm(request.POST, instance=input)
+                if form.is_valid():
+                    form.save()
+                    return redirect("list-inputs")
+
             form.save()
             return redirect("list-inputs")
+
         return isAdmin(
             request,
             ["admin/forms/inputs/create_input.html", {"form": form}],

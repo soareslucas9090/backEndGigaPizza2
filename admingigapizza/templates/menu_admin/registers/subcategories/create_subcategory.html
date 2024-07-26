@@ -15,9 +15,12 @@
         </thead>
         <tbody>
           <tr>
+            {% if form.instance.id %}
+              <input type="hidden" name="edit_id" value="{{ form.instance.id }}" />
+            {% endif %}
             {% load custom_tags %}
             <td>{{ form.name|add_class:'form-control' }}</td>
-            <td class="select-fk">{{ form.type|add_class:'form-select' }}</td>
+            <td class="select-fk">{{ form.category|add_class:'form-select' }}</td>
           </tr>
         </tbody>
       </table>
