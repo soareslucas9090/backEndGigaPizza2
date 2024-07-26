@@ -27,6 +27,14 @@ class Categories(models.Model):
     )
     is_active = models.BooleanField(default=True, null=False)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "type"], name="unique_name_type_constraint"
+            )
+        ]
+        ordering = ["name"]
+
     def __str__(self):
         return f"{self.name}"
 
@@ -40,6 +48,14 @@ class SubCategories(models.Model):
         null=False,
     )
     is_active = models.BooleanField(default=True, null=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "category"], name="unique_name_category_constraint"
+            )
+        ]
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
@@ -67,6 +83,15 @@ class Inputs(models.Model):
     )
     is_active = models.BooleanField(default=True, null=False)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "subcategory"],
+                name="unique_name_subcategory_in_inputs_constraint",
+            )
+        ]
+        ordering = ["name"]
+
     def __str__(self):
         return f"{self.name}"
 
@@ -79,6 +104,15 @@ class Salables(models.Model):
         SubCategories, on_delete=models.CASCADE, related_name="subcategory", null=False
     )
     is_active = models.BooleanField(default=True, null=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "subcategory"],
+                name="unique_name_subcategory_in_salables_constraint",
+            )
+        ]
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
@@ -216,7 +250,7 @@ class Orders(models.Model):
     user = models.ForeignKey(
         Users, on_delete=models.RESTRICT, related_name="user", null=False
     )
-    request_time = models.DateTimeField(null=False, default=datetime.now())
+    request_time = models.DateTimeField(auto_now_add=True)
     delivery_time = models.DateTimeField()
     description = models.CharField(max_length=512, null=False)
     is_finished = models.BooleanField(default=False)
