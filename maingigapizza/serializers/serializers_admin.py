@@ -71,6 +71,11 @@ class CategoriesSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    def validate_type(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("The chosen category type is not active.")
+        return value
+
     @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
@@ -107,6 +112,16 @@ class CategoriesSerializer(serializers.ModelSerializer):
         )
         return links
 
+    def update(self, instance, validated_data):
+        if validated_data.get("type", None):
+            raise serializers.ValidationError("Category type is not editable.")
+
+        instance.name = validated_data.get("name", instance.name)
+        instance.is_active = validated_data.get("is_active", instance.is_active)
+        instance.save()
+
+        return instance
+
 
 class SubCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,6 +138,11 @@ class SubCategoriesSerializer(serializers.ModelSerializer):
 
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
+
+    def validate_category(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("The chosen category is not active.")
+        return value
 
     @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
@@ -162,6 +182,23 @@ class SubCategoriesSerializer(serializers.ModelSerializer):
         )
         return links
 
+    def update(self, instance, validated_data):
+        if validated_data.get("category", None):
+            category = validated_data.pop("category")
+
+            if category.type != instance.category.type:
+                raise serializers.ValidationError(
+                    "The type of category of the subcategory cannot be different from the one already stored."
+                )
+
+            instance.category = category
+
+        instance.name = validated_data.get("name", instance.name)
+        instance.is_active = validated_data.get("is_active", instance.is_active)
+        instance.save()
+
+        return instance
+
 
 class InputsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -183,6 +220,17 @@ class InputsSerializer(serializers.ModelSerializer):
 
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
+
+    def validate_subcategory(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("The chosen subcategory is not active.")
+
+        if not value.category.type.name == "Insumos":
+            raise serializers.ValidationError(
+                "The subcategory must belong to a category of the Inputs type"
+            )
+
+        return value
 
     @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
@@ -245,6 +293,11 @@ class SalablesCompositionsSerializer(serializers.ModelSerializer):
 
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
+
+    def validate_salable(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("The chosen salable is not active.")
+        return value
 
     @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
@@ -313,6 +366,11 @@ class SalablesSerializer(serializers.ModelSerializer):
 
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
+
+    def validate_subcategory(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("The chosen subcategory is not active.")
+        return value
 
     @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
