@@ -1,5 +1,6 @@
 from django.contrib.auth import logout
 from django.contrib.auth import views as auth_views
+from django.db import IntegrityError
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
@@ -95,7 +96,9 @@ class CategoryTypeCreateView(View):
             form.save()
             return redirect("list-types")
 
-        return isAdmin(request, ["admin/forms/types/create_type.html", {"form": form}])
+        return isAdmin(
+            request, ["menu_admin/registers/types/create_type.html", {"form": form}]
+        )
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -147,7 +150,8 @@ class CategoryCreateView(View):
             form.save()
             return redirect("list-categories")
         return isAdmin(
-            request, ["admin/forms/categories/create_category.html", {"form": form}]
+            request,
+            ["menu_admin/registers/categories/create_category.html", {"form": form}],
         )
 
 
@@ -219,9 +223,23 @@ class SubcategoryCreateView(View):
 
             form.save()
             return redirect("list-subcategories")
+
+        constraint_error = "Sub categories com este Name e Category já existe."
+        errors = str(form.non_field_errors())
+
+        if constraint_error in errors:
+            form.errors.clear()
+            form.add_error(
+                None,
+                "Já existe uma subcategoria criada com este nome e esta categoria.",
+            )
+
         return isAdmin(
             request,
-            ["admin/forms/subcategories/create_subcategory.html", {"form": form}],
+            [
+                "menu_admin/registers/subcategories/create_subcategory.html",
+                {"form": form},
+            ],
         )
 
 
@@ -290,7 +308,16 @@ class InputCreateView(View):
             form.save()
             return redirect("list-inputs")
 
+        constraint_error = "Inputs com este Name e Subcategory já existe"
+        errors = str(form.non_field_errors())
+
+        if constraint_error in errors:
+            form.errors.clear()
+            form.add_error(
+                None, "Já existe um insumo criado com este nome e esta subcategoria."
+            )
+
         return isAdmin(
             request,
-            ["admin/forms/inputs/create_input.html", {"form": form}],
+            ["menu_admin/registers/inputs/create_input.html", {"form": form}],
         )
