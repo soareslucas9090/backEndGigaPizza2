@@ -41,7 +41,7 @@
         </form>
         <form method="POST" action="{% url 'list-inputs' %}">
           {% csrf_token %}
-          <td>
+          <td class="size-CategTypePrice">
             <div class="input-group">
               <span class="input-group-text">R$</span>
               <input type="text" name="input_price" class="form-control" value="{{ input.price }}">
@@ -51,12 +51,12 @@
         </form>
         <form method="POST" action="{% url 'list-inputs' %}">
           {% csrf_token %}
-          <td>
+          <td class="size-Quant">
             <input type="text" name="input_quantity" class="form-control" value="{{ input.quantity }}">
             <input type="hidden" name="input_quantity_id" value="{{ input.id }}">
           </td>
         </form>
-        <td>{{ input.unit }}</td>
+        <td class="size-ActiveActions">{{ input.unit }}</td>
         <td class="size-CategTypePrice">{{ input.subcategory }}</td>
         <form method="POST" action="{% url 'list-inputs' %}">
           <td class="checkbox-align">

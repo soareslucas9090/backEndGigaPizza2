@@ -26,7 +26,7 @@
                   <a class="dropdown-item" href="{% url 'list-inputs' %}">Insumos</a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#">Itens P/ Venda</a>
+                  <a class="dropdown-item" href="{% url 'list-salables' %}">Itens P/ Venda</a>
                 </li>
                 <li>
                   <a class="dropdown-item" href="#">Ficha Técnica</a>
@@ -52,6 +52,7 @@
 
       {% endblock %}
       {% block extra_js %}
+
       {% endblock %}
     </div>
   </div>

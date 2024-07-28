@@ -20,6 +20,7 @@ from .forms import (
     CategoryTypeForm,
     CustomAuthenticationForm,
     InputForm,
+    SalableForm,
     SubCategoryForm,
 )
 from .permissions import IsAdmin
@@ -102,6 +103,16 @@ class CategoryTypeCreateView(View):
             form.save()
             return redirect("list-types")
 
+        constraint_error = "Category types com este Name já existe"
+        errors = str(form.errors)
+
+        if constraint_error in errors:
+            form.errors.clear()
+            form.add_error(
+                None,
+                "Já existe um tipo de categoria criada com este nome.",
+            )
+
         return isAdmin(
             request, ["menu_admin/registers/types/create_type.html", {"form": form}]
         )
@@ -155,6 +166,17 @@ class CategoryCreateView(View):
         if form.is_valid():
             form.save()
             return redirect("list-categories")
+
+        constraint_error = "Categories com este Name e Type já existe"
+        errors = str(form.non_field_errors())
+
+        if constraint_error in errors:
+            form.errors.clear()
+            form.add_error(
+                None,
+                "Já existe uma categoria criada com este nome e este tipo.",
+            )
+
         return isAdmin(
             request,
             ["menu_admin/registers/categories/create_category.html", {"form": form}],
@@ -339,4 +361,92 @@ class InputCreateView(View):
         return isAdmin(
             request,
             ["menu_admin/registers/inputs/create_input.html", {"form": form}],
+        )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SalableListView(View):
+    def get(self, request):
+        query = request.GET.get("q", "")
+        if query:
+            salables = Salables.objects.filter(name__icontains=query).order_by("name")
+        else:
+            salables = Salables.objects.all().order_by("name")
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/salables/list_salables.html",
+                {"salables": salables},
+            ],
+        )
+
+    def post(self, request):
+        salable_id = request.POST.get("salable_id")
+        if salable_id:
+            salable = get_object_or_404(Salables, id=salable_id)
+            salable.is_active = not salable.is_active
+
+        elif request.POST.get("salable_name"):
+            new_name = request.POST.get("salable_name")
+            salable_id = request.POST.get("salable_name_id")
+            salable = get_object_or_404(Salables, id=salable_id)
+            salable.name = new_name
+
+        elif request.POST.get("salable_price"):
+            new_price = request.POST.get("salable_price")
+            salable_id = request.POST.get("salable_price_id")
+            salable = get_object_or_404(Salables, id=salable_id)
+            salable.price = new_price
+
+        salable.save()
+        return redirect("list-salables")
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SalableCreateView(View):
+    def get(self, request):
+        edit_id = request.GET.get("edit_id")
+
+        if edit_id:
+            salable = get_object_or_404(Salables, id=edit_id)
+            form = SalableForm(instance=salable)
+        else:
+            form = SalableForm()
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/salables/create_salable.html",
+                {"form": form},
+            ],
+        )
+
+    def post(self, request):
+        form = SalableForm(request.POST)
+        if form.is_valid():
+            edit_id = request.POST.get("edit_id")
+            if edit_id:
+                salable = get_object_or_404(Salables, id=edit_id)
+                form = SalableForm(request.POST, instance=salable)
+                if form.is_valid():
+                    form.save()
+                    return redirect("list-salables")
+
+            form.save()
+            return redirect("list-salables")
+
+        constraint_error = "Salables com este Name e Subcategory já existe"
+        errors = str(form.non_field_errors())
+
+        if constraint_error in errors:
+            form.errors.clear()
+            form.add_error(
+                None,
+                "Já existe um item p/ venda criado com este nome e esta subcategoria.",
+            )
+
+        return isAdmin(
+            request,
+            ["menu_admin/registers/salables/create_salable.html", {"form": form}],
         )

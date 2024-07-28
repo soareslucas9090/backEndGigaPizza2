@@ -1,7 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
-from maingigapizza.models import Categories, CategoryTypes, Inputs, SubCategories
+from maingigapizza.models import (
+    Categories,
+    CategoryTypes,
+    Inputs,
+    Salables,
+    SubCategories,
+)
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -51,4 +57,17 @@ class InputForm(forms.ModelForm):
 
         self.fields["subcategory"].queryset = SubCategories.objects.filter(
             category__type__name="Insumos", is_active=True
+        )
+
+
+class SalableForm(forms.ModelForm):
+    class Meta:
+        model = Salables
+        fields = ["name", "description", "price", "subcategory"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["subcategory"].queryset = SubCategories.objects.filter(
+            category__type__name="P/ Venda", is_active=True
         )

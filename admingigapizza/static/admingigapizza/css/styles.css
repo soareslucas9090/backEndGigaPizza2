@@ -59,3 +59,8 @@ html {
   width: 60px;
   text-align: center;
 }
+
+.list-unit {
+  text-align: center;
+  vertical-align: middle;
+}

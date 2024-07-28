@@ -10,6 +10,8 @@ from .views import (
     InputCreateView,
     InputListView,
     MenuAdminView,
+    SalableCreateView,
+    SalableListView,
     SubcategoryCreateView,
     SubcategoryListView,
 )
@@ -64,5 +66,16 @@ urlpatterns = [
         "menu-admin/register/inputs/new/",
         InputCreateView.as_view(),
         name="create-input",
+    ),
+    # Salables
+    path(
+        "menu-admin/register/salables/",
+        SalableListView.as_view(),
+        name="list-salables",
+    ),
+    path(
+        "menu-admin/register/salables/new/",
+        SalableCreateView.as_view(),
+        name="create-salable",
     ),
 ]
