@@ -7,7 +7,13 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
-from maingigapizza.models import Categories, CategoryTypes, Inputs, SubCategories
+from maingigapizza.models import (
+    Categories,
+    CategoryTypes,
+    Inputs,
+    Salables,
+    SubCategories,
+)
 
 from .forms import (
     CategoryForm,
@@ -265,11 +271,24 @@ class InputListView(View):
         if input_id:
             input = get_object_or_404(Inputs, id=input_id)
             input.is_active = not input.is_active
-        else:
+
+        elif request.POST.get("input_name"):
             new_name = request.POST.get("input_name")
             input_id = request.POST.get("input_name_id")
             input = get_object_or_404(Inputs, id=input_id)
             input.name = new_name
+
+        elif request.POST.get("input_price"):
+            new_price = request.POST.get("input_price")
+            input_id = request.POST.get("input_price_id")
+            input = get_object_or_404(Inputs, id=input_id)
+            input.price = new_price
+
+        elif request.POST.get("input_quantity"):
+            new_quantity = request.POST.get("input_quantity")
+            input_id = request.POST.get("input_quantity_id")
+            input = get_object_or_404(Inputs, id=input_id)
+            input.quantity = new_quantity
 
         input.save()
         return redirect("list-inputs")
