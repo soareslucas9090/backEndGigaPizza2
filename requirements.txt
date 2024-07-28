@@ -15,6 +15,7 @@ jsonschema-specifications==2023.12.1
 packaging==24.1
 psycopg2==2.9.9
 PyJWT==2.8.0
+python-dotenv==1.0.1
 pytz==2024.1
 PyYAML==6.0.1
 referencing==0.35.1

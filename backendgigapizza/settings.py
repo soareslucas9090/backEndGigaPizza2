@@ -3,44 +3,32 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from .spectacular_settings import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("secretKeyDjango")
 
-if SECRET_KEY:
-    DEBUG = os.environ.get("debugMode")
-    ALLOWED_HOSTS = [os.environ.get("allowedHosts")]
-    DATABASES = {
-        "default": {
-            "ENGINE": os.environ.get("bdEngine"),
-            "NAME": os.environ.get("bdName"),
-            "USER": os.environ.get("bdUser"),
-            "PASSWORD": os.environ.get("bdPass"),
-            "HOST": os.environ.get("bdHost"),
-            "PORT": os.environ.get("bdPort"),
-        }
-    }
-    signingKey = os.environ.get("secretKeyJWT")
+# Testa se já há variáveis de ambiente configuradas, se não há, carrega do arquivo local .env
+if not SECRET_KEY:
+    load_dotenv()
+    SECRET_KEY = os.environ.get("secretKeyDjango")
 
-else:
-    from .env import *
-
-    SECRET_KEY = secretKeyDjango
-    DEBUG = debug
-    ALLOWED_HOSTS = allowedHosts
-    DATABASES = {
-        "default": {
-            "ENGINE": bdEngine,
-            "NAME": bdName,
-            "USER": bdUser,
-            "PASSWORD": bdPass,
-            "HOST": bdHost,
-            "PORT": bdPort,
-        }
+DEBUG = os.environ.get("debugMode")
+ALLOWED_HOSTS = [os.environ.get("allowedHosts")]
+DATABASES = {
+    "default": {
+        "ENGINE": os.environ.get("bdEngine"),
+        "NAME": os.environ.get("bdName"),
+        "USER": os.environ.get("bdUser"),
+        "PASSWORD": os.environ.get("bdPass"),
+        "HOST": os.environ.get("bdHost"),
+        "PORT": os.environ.get("bdPort"),
     }
-    signingKey = secretKeyJWT
+}
+signing_key = os.environ.get("secretKeyJWT")
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -209,7 +197,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=240),
     "BLACKLIST_AFTER_ROTATION": False,
-    "SIGNING_KEY": signingKey,
+    "SIGNING_KEY": signing_key,
     "AUTH_HEADER_TYPES": ("Bearer",),
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
