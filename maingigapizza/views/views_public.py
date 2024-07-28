@@ -53,8 +53,8 @@ class ListSalablesViewSet(GenericViewSet, ListModelMixin):
     def get_queryset(self):
         queryset = Salables.objects.filter(
             is_active=True,
-            subcategory__isactive=True,
-            subcategory__category__isactive=True,
+            subcategory__is_active=True,
+            subcategory__category__is_active=True,
         )
 
         return queryset.order_by("subcategory")
