@@ -64,18 +64,19 @@ Na instância online da aplicação foi mockado um usuário para que seja possí
 # Rodando o projeto offline
 
 Para rodar o projeto é bem simples e convencional, basta dar um `pip install -r requirements.txt` (recomendável rodar em uma venv).
-O código busca um arquivo `env.py` para procurar as variáveis internas do projeto, caso não ache as variáveis de ambiente instaladas no SO. O arquivo deve seguir os seguintes moldes:
+O código busca um arquivo `.env` para procurar as variáveis internas do projeto, caso não ache as variáveis de ambiente instaladas no SO. O arquivo deve seguir os seguintes moldes:
 ```python
-secretKeyDjango =  "Sua chave secreta do Django aqui"
-secretKeyJWT =  "Sua chave secreta do DRF-SimpleJWT aqui"
-debug =  True # Ou False
-bdEngine =  "django.db.backends.postgresql (Ou outro engine de banco)"
-bdName =  "postgres (o nome do banco)"
-bdUser =  "postgres.user (o usuário do banco)"
-bdPass =  "BDpass#123 (a senha do banco)"
-bdHost =  "localhost (o host do banco)"
-bdPort =  "5432 (a porta do banco)"
-allowedHosts = ["*", "Os hosts permitidos para fazer request na sua API"]
+secretKeyDjango=Sua chave secreta do Django aqui
+secretKeyJWT=Sua chave secreta do DRF-SimpleJWT aqui
+debug=True # Ou False
+bdEngine=django.db.backends.postgresql (Ou outro engine de banco)
+bdName=postgres (o nome do banco)
+bdUser=postgres.user (o usuário do banco)
+bdPass=BDpass#123 (a senha do banco)
+bdHost=localhost (o host do banco)
+bdPort=5432 (a porta do banco)
+allowedHosts=*,Os hosts permitidos para fazer request na sua API
+internalIPs=127.0.0.1,https://deploy.com,Os ips internos aqui
 ```
 Colocar o arquivo `env.py` dentro da pasta `backendgigapizza/` do projeto (mesmo nível de settings.py)
 E rodar o projeto com `python manage.py runserver`
