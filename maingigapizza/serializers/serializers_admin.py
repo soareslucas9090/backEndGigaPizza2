@@ -25,6 +25,24 @@ class CategoryTypesSerializer(serializers.ModelSerializer):
     # Inserção de hiperlinks na resposta
     links = serializers.SerializerMethodField(read_only=True)
 
+    def update(self, instance, validated_data):
+        default_types = [
+            "Insumos",
+            "P/ Venda",
+            "Taxas",
+        ]
+
+        if instance.name in default_types:
+            raise serializers.ValidationError(
+                "You cannot edit a default category type."
+            )
+        else:
+            instance.name = validated_data.get("name", instance.name)
+            instance.is_active = validated_data.get("is_active", instance.is_active)
+            instance.save()
+
+            return instance
+
     @extend_schema_field(serializers.DictField())
     def get_links(self, obj):
         request = self.context["request"]
