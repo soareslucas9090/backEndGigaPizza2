@@ -37,7 +37,7 @@
           </td>
         </form>
         <td class="size-CategTypePrice">
-          {{ subcategory.category }}
+          {{ subcategory.category.type.name }} - {{ subcategory.category }}
         </td>
         <form method="POST" action="{% url 'list-subcategories' %}">
           <td class="checkbox-align">
