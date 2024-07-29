@@ -539,6 +539,16 @@ class SalableCompositionCreateView(View):
             url = reverse("detail-composition") + f"?salable_id={salable_id}"
             return redirect(url)
 
+        constraint_error = "Salables_ compositions com este Salable e Input já existe"
+        errors = str(form.non_field_errors())
+
+        if constraint_error in errors:
+            form.errors.clear()
+            form.add_error(
+                None,
+                "Insumo já adicionado na ficha técnica.",
+            )
+
         return isAdmin(
             request,
             [
