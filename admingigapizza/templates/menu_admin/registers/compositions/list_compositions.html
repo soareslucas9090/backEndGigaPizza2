@@ -1,0 +1,40 @@
+{% extends 'menu_admin/base_menu.html' %}
+{% load static %}
+
+{% block menu_admin_content %}
+  <div class="container mt-4">
+    <h1>Composições de Itens</h1>
+    <div class="d-flex justify-content-between mb-3">
+      <form method="GET" class="form-control size-form-control">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">
+            <input type="text" name="q" class="form-control" placeholder="Buscar Item" value="{{ query }}" />
+          </div>
+          <div class="col-auto">
+            <button type="submit" class="btn btn-primary ml-2">Buscar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Subcategoria</th>
+          <th class="size-ActiveActions">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for salable in salables %}
+          <tr>
+            <td>{{ salable.name }}</td>
+            <td>{{ salable.subcategory }}</td>
+            <td>
+              <a href="{% url 'detail-composition' %}?salable_id={{ salable.id }}" class="btn btn-secondary">Editar</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

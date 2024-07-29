@@ -6,6 +6,7 @@ from maingigapizza.models import (
     CategoryTypes,
     Inputs,
     Salables,
+    Salables_Compositions,
     SubCategories,
 )
 
@@ -71,3 +72,21 @@ class SalableForm(forms.ModelForm):
         self.fields["subcategory"].queryset = SubCategories.objects.filter(
             category__type__name="P/ Venda", is_active=True
         )
+
+
+class SalablesCompositionForm(forms.ModelForm):
+    class Meta:
+        model = Salables_Compositions
+        fields = ["salable", "input", "quantity"]
+
+    def __init__(self, *args, **kwargs):
+        salable_id = kwargs.pop("salable_id", None)
+        super().__init__(*args, **kwargs)
+
+        inputs = Inputs.objects.filter(is_active=True)
+        self.fields["input"].widget = forms.Select(
+            choices=[(input.id, f"{input.name} - {input.unit}") for input in inputs]
+        )
+
+        if salable_id is not None:
+            self.fields["salable"].initial = salable_id

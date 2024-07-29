@@ -55,6 +55,10 @@ html {
   width: 12%;
 }
 
+.size-QuantComposition {
+  width: 30%;
+}
+
 .size-ActiveActions {
   width: 60px;
   text-align: center;

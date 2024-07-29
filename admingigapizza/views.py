@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
@@ -12,6 +13,7 @@ from maingigapizza.models import (
     CategoryTypes,
     Inputs,
     Salables,
+    Salables_Compositions,
     SubCategories,
 )
 
@@ -21,6 +23,7 @@ from .forms import (
     CustomAuthenticationForm,
     InputForm,
     SalableForm,
+    SalablesCompositionForm,
     SubCategoryForm,
 )
 from .permissions import IsAdmin
@@ -449,4 +452,97 @@ class SalableCreateView(View):
         return isAdmin(
             request,
             ["menu_admin/registers/salables/create_salable.html", {"form": form}],
+        )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SalableCompositionListView(View):
+    def get(self, request):
+        query = request.GET.get("q", "")
+        if query:
+            salables = Salables.objects.filter(
+                name__icontains=query, is_active=True
+            ).order_by("name")
+        else:
+            salables = Salables.objects.filter(is_active=True).order_by("name")
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/compositions/list_compositions.html",
+                {"salables": salables},
+            ],
+        )
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SalableCompositionDetailView(View):
+    def get(self, request):
+        salable_id = request.GET.get("salable_id")
+        compositions = Salables_Compositions.objects.filter(salable=salable_id)
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/compositions/detail_composition.html",
+                {
+                    "compositions": compositions,
+                    "salable": Salables.objects.get(id=salable_id),
+                },
+            ],
+        )
+
+    def post(self, request):
+        composition_quantity_id = request.POST.get("composition_quantity_id")
+        if composition_quantity_id:
+            composition = get_object_or_404(
+                Salables_Compositions, id=composition_quantity_id
+            )
+            new_quantity = request.POST.get("composition_quantity")
+            composition.quantity = not new_quantity
+            salable_id = composition.salable.id
+            composition.save()
+
+        elif request.POST.get("composition_delete_id"):
+            composition_delete_id = request.POST.get("composition_delete_id")
+            composition = get_object_or_404(
+                Salables_Compositions, id=composition_delete_id
+            )
+            salable_id = composition.salable.id
+            composition.delete()
+
+        url = reverse("detail-composition") + f"?salable_id={salable_id}"
+        return redirect(url)
+
+
+@method_decorator(csrf_protect, name="dispatch")
+class SalableCompositionCreateView(View):
+    def get(self, request):
+        salable_id = request.GET.get("salable_id")
+
+        form = SalablesCompositionForm(salable_id=salable_id)
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/compositions/create_composition.html",
+                {"form": form, "salable": Salables.objects.get(id=salable_id)},
+            ],
+        )
+
+    def post(self, request):
+        salable_id = request.GET.get("salable_id")
+        form = SalablesCompositionForm(request.POST, salable_id=salable_id)
+
+        if form.is_valid():
+            form.save()
+            url = reverse("detail-composition") + f"?salable_id={salable_id}"
+            return redirect(url)
+
+        return isAdmin(
+            request,
+            [
+                "menu_admin/registers/compositions/create_composition.html",
+                {"form": form, "salable": Salables.objects.get(id=salable_id)},
+            ],
         )
