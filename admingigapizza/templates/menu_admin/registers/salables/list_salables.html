@@ -46,7 +46,7 @@
           <td class="size-CategTypePrice">
             <div class="input-group">
               <span class="input-group-text">R$</span>
-              <input type="text" name="salable_price" class="form-control" value="{{ salable.price }}">
+              <input type="text" name="salable_price" id="id_price" class="form-control" value="{{ salable.price }}">
               <input type="hidden" name="salable_price_id" value="{{ salable.id }}">
             </div>
           </td>
@@ -67,4 +67,8 @@
     </tbody>
   </table>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'admingigapizza/js/form_input_price.js' %}"></script>
 {% endblock %}
