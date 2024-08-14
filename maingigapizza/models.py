@@ -9,12 +9,34 @@ from django.contrib.auth.models import (
 from django.db import models
 
 
+def selfCapitalize(str):
+    p = [
+        "da",
+        "de",
+        "do",
+        "para",
+    ]
+
+    items = []
+    for item in str.split():
+        if not item in p:
+            item = item.capitalize()
+        items.append(item)
+
+    new_name = " ".join(items)
+    return new_name
+
+
 class CategoryTypes(models.Model):
     name = models.CharField(max_length=255, null=False, unique=True)
     is_active = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return f"{self.name}"
+
+    def save(self, *args, **kwargs):
+        self.name = selfCapitalize(self.name)
+        super().save(*args, **kwargs)
 
 
 class Categories(models.Model):

@@ -1,7 +1,7 @@
 from django.contrib.auth import logout
 from django.contrib.auth import views as auth_views
 from django.db import IntegrityError
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -61,6 +61,8 @@ class MenuAdminView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class CategoryTypeListView(View):
     def get(self, request):
+        form = CategoryTypeForm()
+
         query = request.GET.get("q", "")
         if query:
             types = CategoryTypes.objects.filter(name__icontains=query).order_by("name")
@@ -71,54 +73,35 @@ class CategoryTypeListView(View):
             request,
             [
                 "menu_admin/registers/types/list_types.html",
-                {"types": types},
+                {"types": types, "form": form},
             ],
-        )
-
-    def post(self, request):
-        type_id = request.POST.get("type_id")
-        if type_id:
-            type = get_object_or_404(CategoryTypes, id=type_id)
-            type.is_active = not type.is_active
-        else:
-            new_name = request.POST.get("type_name")
-            type_id = request.POST.get("type_name_id")
-            type = get_object_or_404(Categories, id=type_id)
-            type.name = new_name
-
-        type.save()
-        return redirect("list-types")
-
-
-@method_decorator(csrf_protect, name="dispatch")
-class CategoryTypeCreateView(View):
-    def get(self, request):
-        form = CategoryTypeForm()
-        return isAdmin(
-            request,
-            ["menu_admin/registers/types/create_type.html", {"form": form}],
         )
 
     def post(self, request):
         form = CategoryTypeForm(request.POST)
 
         if form.is_valid():
-            form.save()
-            return redirect("list-types")
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                form.save()
+                return JsonResponse({"success": True})
 
-        constraint_error = "Category types com este Name já existe"
-        errors = str(form.errors)
+        else:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(form.errors, status=400)
 
-        if constraint_error in errors:
-            form.errors.clear()
-            form.add_error(
-                None,
-                "Já existe um tipo de categoria criada com este nome.",
-            )
+        type_id = request.POST.get("type_id")
+        if type_id:
+            type = get_object_or_404(CategoryTypes, id=type_id)
+            type.is_active = not type.is_active
 
-        return isAdmin(
-            request, ["menu_admin/registers/types/create_type.html", {"form": form}]
-        )
+        new_name = request.POST.get("type_name")
+        if new_name:
+            type_id = request.POST.get("type_name_id")
+            type = get_object_or_404(CategoryTypes, id=type_id)
+            type.name = new_name
+
+        type.save()
+        return redirect("list-types")
 
 
 @method_decorator(csrf_protect, name="dispatch")

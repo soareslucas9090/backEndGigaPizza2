@@ -21,6 +21,12 @@ class CategoryTypeForm(forms.ModelForm):
         model = CategoryTypes
         fields = ["name"]
 
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if CategoryTypes.objects.filter(name__iexact=name.lower()).exists():
+            raise forms.ValidationError("Já existe um tipo de categoria com esse nome.")
+        return name
+
 
 class CategoryForm(forms.ModelForm):
     class Meta:
