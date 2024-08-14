@@ -15,7 +15,8 @@
         </div>
       </div>
     </form>
-    <a href="{% url "create-subcategory" %}" class="btn btn-primary" style="height: auto; width: auto; max-height: 60px;">Adicionar Subcategoria +</a>
+    <button type="button" data-bs-toggle="modal" data-bs-target="#createSubCategoryModal" class="btn btn-primary"
+      style="height: auto; width: auto; max-height: 60px;">Adicionar Subcategoria +</button>
   </div>
   <table class="table table-bordered">
     <thead>
@@ -54,4 +55,45 @@
     </tbody>
   </table>
 </div>
+
+<div class="modal fade" id="createSubCategoryModal" tabindex="-1" aria-labelledby="createSubCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createSubCategoryModalLabel">Criar Subcategoria</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div id="modal-errors" class="alert alert-danger d-none mx-3 mt-3"></div>
+      <div class="modal-body">
+        <form id="createForm" method="POST" action="{% url 'list-subcategories' %}">
+          {% csrf_token %}
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th style="width: 30%;">Categoria</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {% if form.instance.id %}
+                  <input type="hidden" name="edit_id" value="{{ form.instance.id }}" />
+                {% endif %}
+                {% load custom_tags %}
+                <td>{{ form.name|add_class:'form-control' }}</td>
+                <td>{{ form.category|add_class:'form-select' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <a href="{% url 'list-subcategories' %}" class="btn btn-primary">Voltar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'admingigapizza/js/create_form.js' %}"></script>
 {% endblock %}

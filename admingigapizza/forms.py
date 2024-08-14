@@ -41,7 +41,7 @@ class CategoryForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data["name"]
         if Categories.objects.filter(name__iexact=name.lower()).exists():
-            raise forms.ValidationError("Já existe uma categoria com este nome.")
+            raise forms.ValidationError("Já existe uma categoria com este nome e tipo.")
         return name
 
 
@@ -58,6 +58,14 @@ class SubCategoryForm(forms.ModelForm):
                 type=category_type, is_active=True
             )
 
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if SubCategories.objects.filter(name__iexact=name.lower()).exists():
+            raise forms.ValidationError(
+                "Já existe uma subcategoria com este nome e categoria."
+            )
+        return name
+
 
 class InputForm(forms.ModelForm):
     class Meta:
@@ -72,6 +80,12 @@ class InputForm(forms.ModelForm):
             category__type__name="Insumos", is_active=True
         )
 
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if Inputs.objects.filter(name__iexact=name.lower()).exists():
+            raise forms.ValidationError("Já existe um insumo com este nome.")
+        return name
+
 
 class SalableForm(forms.ModelForm):
     class Meta:
@@ -84,6 +98,14 @@ class SalableForm(forms.ModelForm):
         self.fields["subcategory"].queryset = SubCategories.objects.filter(
             category__type__name="P/ Venda", is_active=True
         )
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if Salables.objects.filter(name__iexact=name.lower()).exists():
+            raise forms.ValidationError(
+                "Já existe item p/ venda com este nome e subcategoria."
+            )
+        return name
 
 
 class SalablesCompositionForm(forms.ModelForm):

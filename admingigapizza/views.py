@@ -130,13 +130,11 @@ class CategoryListView(View):
 
         if form.is_valid():
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                print("form beleza")
                 form.save()
                 return JsonResponse({"success": True})
 
         else:
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                print("form errado")
                 return JsonResponse(form.errors, status=400)
 
         category_id = request.POST.get("category_id")
@@ -157,6 +155,8 @@ class CategoryListView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class SubcategoryListView(View):
     def get(self, request):
+        form = SubCategoryForm()
+
         query = request.GET.get("q", "")
         if query:
             subcategories = SubCategories.objects.filter(
@@ -169,17 +169,29 @@ class SubcategoryListView(View):
             request,
             [
                 "menu_admin/registers/subcategories/list_subcategories.html",
-                {"subcategories": subcategories},
+                {"subcategories": subcategories, "form": form},
             ],
         )
 
     def post(self, request):
+        form = SubCategoryForm(request.POST)
+
+        if form.is_valid():
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                form.save()
+                return JsonResponse({"success": True})
+
+        else:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(form.errors, status=400)
+
         subcategory_id = request.POST.get("subcategory_id")
         if subcategory_id:
             subcategory = get_object_or_404(SubCategories, id=subcategory_id)
             subcategory.is_active = not subcategory.is_active
-        else:
-            new_name = request.POST.get("subcategory_name")
+
+        new_name = request.POST.get("subcategory_name")
+        if new_name:
             subcategory_id = request.POST.get("subcategory_name_id")
             subcategory = get_object_or_404(SubCategories, id=subcategory_id)
             subcategory.name = new_name
@@ -193,18 +205,15 @@ class SubcategoryCreateView(View):
     def get(self, request):
         edit_id = request.GET.get("edit_id")
 
-        if edit_id:
-            subcategory = get_object_or_404(SubCategories, id=edit_id)
-            form = SubCategoryForm(
-                instance=subcategory, category_type=subcategory.category.type
-            )
-        else:
-            form = SubCategoryForm()
+        subcategory = get_object_or_404(SubCategories, id=edit_id)
+        form = SubCategoryForm(
+            instance=subcategory, category_type=subcategory.category.type
+        )
 
         return isAdmin(
             request,
             [
-                "menu_admin/registers/subcategories/create_subcategory.html",
+                "menu_admin/registers/subcategories/edit_subcategory.html",
                 {"form": form},
             ],
         )
@@ -223,20 +232,10 @@ class SubcategoryCreateView(View):
             form.save()
             return redirect("list-subcategories")
 
-        constraint_error = "Sub categories com este Name e Category já existe."
-        errors = str(form.non_field_errors())
-
-        if constraint_error in errors:
-            form.errors.clear()
-            form.add_error(
-                None,
-                "Já existe uma subcategoria criada com este nome e esta categoria.",
-            )
-
         return isAdmin(
             request,
             [
-                "menu_admin/registers/subcategories/create_subcategory.html",
+                "menu_admin/registers/subcategories/edit_subcategory.html",
                 {"form": form},
             ],
         )
