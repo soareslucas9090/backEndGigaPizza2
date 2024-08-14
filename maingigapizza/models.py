@@ -60,6 +60,10 @@ class Categories(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def save(self, *args, **kwargs):
+        self.name = selfCapitalize(self.name)
+        super().save(*args, **kwargs)
+
 
 class SubCategories(models.Model):
     name = models.CharField(max_length=255, null=False, unique=False)
@@ -81,6 +85,10 @@ class SubCategories(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def save(self, *args, **kwargs):
+        self.name = selfCapitalize(self.name)
+        super().save(*args, **kwargs)
 
 
 class Inputs(models.Model):
@@ -116,6 +124,10 @@ class Inputs(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def save(self, *args, **kwargs):
+        self.name = selfCapitalize(self.name)
+        super().save(*args, **kwargs)
 
 
 class Salables(models.Model):

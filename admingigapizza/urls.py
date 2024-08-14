@@ -1,7 +1,6 @@
 from django.urls import path
 
 from .views import (
-    CategoryCreateView,
     CategoryListView,
     CategoryTypeListView,
     CustomLoginView,
@@ -36,11 +35,6 @@ urlpatterns = [
         "menu-admin/register/categories/",
         CategoryListView.as_view(),
         name="list-categories",
-    ),
-    path(
-        "menu-admin/register/categories/new/",
-        CategoryCreateView.as_view(),
-        name="create-category",
     ),
     # Subcategories
     path(

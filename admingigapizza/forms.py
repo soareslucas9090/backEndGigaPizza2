@@ -24,7 +24,7 @@ class CategoryTypeForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data["name"]
         if CategoryTypes.objects.filter(name__iexact=name.lower()).exists():
-            raise forms.ValidationError("Já existe um tipo de categoria com esse nome.")
+            raise forms.ValidationError("Já existe um tipo de categoria com este nome.")
         return name
 
 
@@ -37,6 +37,12 @@ class CategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["type"].queryset = CategoryTypes.objects.filter(is_active=True)
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if Categories.objects.filter(name__iexact=name.lower()).exists():
+            raise forms.ValidationError("Já existe uma categoria com este nome.")
+        return name
 
 
 class SubCategoryForm(forms.ModelForm):

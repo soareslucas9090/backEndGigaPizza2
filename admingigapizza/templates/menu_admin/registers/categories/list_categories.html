@@ -15,7 +15,8 @@
         </div>
       </div>
     </form>
-    <a href="{% url "create-category" %}" class="btn btn-primary" style="height: auto; width: auto; max-height: 60px;">Adicionar Categoria +</a>
+    <button type="button" data-bs-toggle="modal" data-bs-target="#createCategoryModal" class="btn btn-primary"
+      style="height: auto; width: auto; max-height: 60px;">Adicionar Categoria +</button>
   </div>
   <table class="table table-bordered">
     <thead>
@@ -50,4 +51,42 @@
     </tbody>
   </table>
 </div>
+
+
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createCategoryModalLabel">Criar Categoria</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div id="modal-errors" class="alert alert-danger d-none mx-3 mt-3"></div>
+      <div class="modal-body">
+        <form id="createForm" method="POST" action="{% url 'list-categories' %}">
+          {% csrf_token %}
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th style="width: 30%;">Tipo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {% load custom_tags %}
+                <td>{{ form.name|add_class:'form-control' }}</td>
+                <td>{{ form.type|add_class:'form-select' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'admingigapizza/js/create_form.js' %}"></script>
 {% endblock %}

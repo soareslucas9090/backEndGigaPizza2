@@ -107,6 +107,8 @@ class CategoryTypeListView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class CategoryListView(View):
     def get(self, request):
+        form = CategoryForm()
+
         query = request.GET.get("q", "")
         if query:
             categories = Categories.objects.filter(name__icontains=query).order_by(
@@ -119,54 +121,37 @@ class CategoryListView(View):
             request,
             [
                 "menu_admin/registers/categories/list_categories.html",
-                {"categories": categories},
+                {"categories": categories, "form": form},
             ],
         )
 
     def post(self, request):
+        form = CategoryForm(request.POST)
+
+        if form.is_valid():
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                print("form beleza")
+                form.save()
+                return JsonResponse({"success": True})
+
+        else:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                print("form errado")
+                return JsonResponse(form.errors, status=400)
+
         category_id = request.POST.get("category_id")
         if category_id:
             category = get_object_or_404(Categories, id=category_id)
             category.is_active = not category.is_active
-        else:
-            new_name = request.POST.get("category_name")
+
+        new_name = request.POST.get("category_name")
+        if new_name:
             category_id = request.POST.get("category_name_id")
             category = get_object_or_404(Categories, id=category_id)
             category.name = new_name
 
         category.save()
         return redirect("list-categories")
-
-
-@method_decorator(csrf_protect, name="dispatch")
-class CategoryCreateView(View):
-    def get(self, request):
-        form = CategoryForm()
-        return isAdmin(
-            request,
-            ["menu_admin/registers/categories/create_category.html", {"form": form}],
-        )
-
-    def post(self, request):
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("list-categories")
-
-        constraint_error = "Categories com este Name e Type já existe"
-        errors = str(form.non_field_errors())
-
-        if constraint_error in errors:
-            form.errors.clear()
-            form.add_error(
-                None,
-                "Já existe uma categoria criada com este nome e este tipo.",
-            )
-
-        return isAdmin(
-            request,
-            ["menu_admin/registers/categories/create_category.html", {"form": form}],
-        )
 
 
 @method_decorator(csrf_protect, name="dispatch")
