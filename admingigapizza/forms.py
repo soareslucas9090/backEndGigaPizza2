@@ -82,8 +82,11 @@ class InputForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data["name"]
+        print(self.cleaned_data)
         if Inputs.objects.filter(name__iexact=name.lower()).exists():
-            raise forms.ValidationError("Já existe um insumo com este nome.")
+            raise forms.ValidationError(
+                "Já existe um insumo com este nome e subcategoria."
+            )
         return name
 
 

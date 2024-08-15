@@ -244,6 +244,8 @@ class SubcategoryCreateView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class InputListView(View):
     def get(self, request):
+        form = InputForm()
+
         query = request.GET.get("q", "")
         if query:
             inputs = Inputs.objects.filter(name__icontains=query).order_by("name")
@@ -254,30 +256,40 @@ class InputListView(View):
             request,
             [
                 "menu_admin/registers/inputs/list_inputs.html",
-                {"inputs": inputs},
+                {"inputs": inputs, "form": form},
             ],
         )
 
     def post(self, request):
+        form = InputForm(request.POST)
+        if form.is_valid():
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                form.save()
+                return JsonResponse({"success": True})
+
+        else:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(form.errors, status=400)
+
         input_id = request.POST.get("input_id")
         if input_id:
             input = get_object_or_404(Inputs, id=input_id)
             input.is_active = not input.is_active
 
-        elif request.POST.get("input_name"):
-            new_name = request.POST.get("input_name")
+        new_name = request.POST.get("input_name")
+        if new_name:
             input_id = request.POST.get("input_name_id")
             input = get_object_or_404(Inputs, id=input_id)
             input.name = new_name
 
-        elif request.POST.get("input_price"):
-            new_price = request.POST.get("input_price")
+        new_price = request.POST.get("input_price")
+        if new_price:
             input_id = request.POST.get("input_price_id")
             input = get_object_or_404(Inputs, id=input_id)
             input.price = new_price
 
-        elif request.POST.get("input_quantity"):
-            new_quantity = request.POST.get("input_quantity")
+        new_quantity = request.POST.get("input_quantity")
+        if new_quantity:
             input_id = request.POST.get("input_quantity_id")
             input = get_object_or_404(Inputs, id=input_id)
             input.quantity = new_quantity
