@@ -59,17 +59,25 @@ Foi implementado um frontend para a parte administrativa da aplicação, que pod
 
 Para fazer login e testar o sistema, use o acesso fornecido abaixo na seção "Acesso".
 Telas de exemplificação do sistema:
+
 01 - Login
+
 <img src="https://i.imgur.com/MQCDPSM.png" alt="Tela de login">
 
+
 02 - Menu de Cadastro
+
 <img src="https://i.imgur.com/v57fo1M.png" alt="Tela com o submenu de cadastro">
 
 03 - Listagem de Itens P/ Venda
+
 <img src="https://i.imgur.com/rrmWerR.png" alt="Tela com a listagem dos ítens de venda cadastrados">
 
+
 04 - Adição / Edição de Item P/ Venda
+
 <img src="https://i.imgur.com/PtGoMAp.png" alt="Tela com modal de criação/edição de item de venda">
+
 
 ## Acesso
 
