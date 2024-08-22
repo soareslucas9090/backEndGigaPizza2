@@ -26,7 +26,7 @@ from .forms import (
     SalablesCompositionForm,
     SubCategoryForm,
 )
-from .permissions import IsAdmin
+from .permissions import IsAdmin, IsNotAdminToDocumentation
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -78,29 +78,33 @@ class CategoryTypeListView(View):
         )
 
     def post(self, request):
-        form = CategoryTypeForm(request.POST)
+        if IsNotAdminToDocumentation().has_permission(request=request, view=None):
 
-        if form.is_valid():
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                form.save()
-                return JsonResponse({"success": True})
+            form = CategoryTypeForm(request.POST)
 
-        else:
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse(form.errors, status=400)
+            if form.is_valid():
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    form.save()
+                    return JsonResponse({"success": True})
 
-        type_id = request.POST.get("type_id")
-        if type_id:
-            type = get_object_or_404(CategoryTypes, id=type_id)
-            type.is_active = not type.is_active
+            else:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(form.errors, status=400)
 
-        new_name = request.POST.get("type_name")
-        if new_name:
-            type_id = request.POST.get("type_name_id")
-            type = get_object_or_404(CategoryTypes, id=type_id)
-            type.name = new_name
+            type_id = request.POST.get("type_id")
+            if type_id:
+                type = get_object_or_404(CategoryTypes, id=type_id)
+                type.is_active = not type.is_active
 
-        type.save()
+            new_name = request.POST.get("type_name")
+            if new_name:
+                type_id = request.POST.get("type_name_id")
+                type = get_object_or_404(CategoryTypes, id=type_id)
+                type.name = new_name
+
+            type.save()
+            return redirect("list-types")
+
         return redirect("list-types")
 
 
@@ -126,29 +130,32 @@ class CategoryListView(View):
         )
 
     def post(self, request):
-        form = CategoryForm(request.POST)
+        if IsNotAdminToDocumentation().has_permission(request=request, view=None):
+            form = CategoryForm(request.POST)
 
-        if form.is_valid():
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                form.save()
-                return JsonResponse({"success": True})
+            if form.is_valid():
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    form.save()
+                    return JsonResponse({"success": True})
 
-        else:
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse(form.errors, status=400)
+            else:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(form.errors, status=400)
 
-        category_id = request.POST.get("category_id")
-        if category_id:
-            category = get_object_or_404(Categories, id=category_id)
-            category.is_active = not category.is_active
+            category_id = request.POST.get("category_id")
+            if category_id:
+                category = get_object_or_404(Categories, id=category_id)
+                category.is_active = not category.is_active
 
-        new_name = request.POST.get("category_name")
-        if new_name:
-            category_id = request.POST.get("category_name_id")
-            category = get_object_or_404(Categories, id=category_id)
-            category.name = new_name
+            new_name = request.POST.get("category_name")
+            if new_name:
+                category_id = request.POST.get("category_name_id")
+                category = get_object_or_404(Categories, id=category_id)
+                category.name = new_name
 
-        category.save()
+            category.save()
+            return redirect("list-categories")
+
         return redirect("list-categories")
 
 
@@ -174,38 +181,41 @@ class SubcategoryListView(View):
         )
 
     def post(self, request):
-        form = SubCategoryForm(request.POST)
+        if IsNotAdminToDocumentation().has_permission(request=request, view=None):
+            form = SubCategoryForm(request.POST)
 
-        if form.is_valid():
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                edit_id = request.POST.get("edit_id")
-                if edit_id:
-                    subcategory = get_object_or_404(SubCategories, id=edit_id)
-                    form = SubCategoryForm(request.POST, instance=subcategory)
+            if form.is_valid():
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    edit_id = request.POST.get("edit_id")
+                    if edit_id:
+                        subcategory = get_object_or_404(SubCategories, id=edit_id)
+                        form = SubCategoryForm(request.POST, instance=subcategory)
 
-                    if form.is_valid():
-                        form.save()
-                        return JsonResponse({"success": True})
+                        if form.is_valid():
+                            form.save()
+                            return JsonResponse({"success": True})
 
-                form.save()
-                return JsonResponse({"success": True})
+                    form.save()
+                    return JsonResponse({"success": True})
 
-        else:
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse(form.errors, status=400)
+            else:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(form.errors, status=400)
 
-        subcategory_id = request.POST.get("subcategory_id")
-        if subcategory_id:
-            subcategory = get_object_or_404(SubCategories, id=subcategory_id)
-            subcategory.is_active = not subcategory.is_active
+            subcategory_id = request.POST.get("subcategory_id")
+            if subcategory_id:
+                subcategory = get_object_or_404(SubCategories, id=subcategory_id)
+                subcategory.is_active = not subcategory.is_active
 
-        new_name = request.POST.get("subcategory_name")
-        if new_name:
-            subcategory_id = request.POST.get("subcategory_name_id")
-            subcategory = get_object_or_404(SubCategories, id=subcategory_id)
-            subcategory.name = new_name
+            new_name = request.POST.get("subcategory_name")
+            if new_name:
+                subcategory_id = request.POST.get("subcategory_name_id")
+                subcategory = get_object_or_404(SubCategories, id=subcategory_id)
+                subcategory.name = new_name
 
-        subcategory.save()
+            subcategory.save()
+            return redirect("list-subcategories")
+
         return redirect("list-subcategories")
 
 
@@ -229,49 +239,52 @@ class InputListView(View):
         )
 
     def post(self, request):
-        form = InputForm(request.POST)
-        if form.is_valid():
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                edit_id = request.POST.get("edit_id")
-                if edit_id:
-                    input = get_object_or_404(Inputs, id=edit_id)
-                    form = InputForm(request.POST, instance=input)
+        if IsNotAdminToDocumentation().has_permission(request=request, view=None):
+            form = InputForm(request.POST)
+            if form.is_valid():
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    edit_id = request.POST.get("edit_id")
+                    if edit_id:
+                        input = get_object_or_404(Inputs, id=edit_id)
+                        form = InputForm(request.POST, instance=input)
 
-                    if form.is_valid():
-                        form.save()
-                        return JsonResponse({"success": True})
+                        if form.is_valid():
+                            form.save()
+                            return JsonResponse({"success": True})
 
-                form.save()
-                return JsonResponse({"success": True})
+                    form.save()
+                    return JsonResponse({"success": True})
 
-        else:
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse(form.errors, status=400)
+            else:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(form.errors, status=400)
 
-        input_id = request.POST.get("input_id")
-        if input_id:
-            input = get_object_or_404(Inputs, id=input_id)
-            input.is_active = not input.is_active
+            input_id = request.POST.get("input_id")
+            if input_id:
+                input = get_object_or_404(Inputs, id=input_id)
+                input.is_active = not input.is_active
 
-        new_name = request.POST.get("input_name")
-        if new_name:
-            input_id = request.POST.get("input_name_id")
-            input = get_object_or_404(Inputs, id=input_id)
-            input.name = new_name
+            new_name = request.POST.get("input_name")
+            if new_name:
+                input_id = request.POST.get("input_name_id")
+                input = get_object_or_404(Inputs, id=input_id)
+                input.name = new_name
 
-        new_price = request.POST.get("input_price")
-        if new_price:
-            input_id = request.POST.get("input_price_id")
-            input = get_object_or_404(Inputs, id=input_id)
-            input.price = new_price
+            new_price = request.POST.get("input_price")
+            if new_price:
+                input_id = request.POST.get("input_price_id")
+                input = get_object_or_404(Inputs, id=input_id)
+                input.price = new_price
 
-        new_quantity = request.POST.get("input_quantity")
-        if new_quantity:
-            input_id = request.POST.get("input_quantity_id")
-            input = get_object_or_404(Inputs, id=input_id)
-            input.quantity = new_quantity
+            new_quantity = request.POST.get("input_quantity")
+            if new_quantity:
+                input_id = request.POST.get("input_quantity_id")
+                input = get_object_or_404(Inputs, id=input_id)
+                input.quantity = new_quantity
 
-        input.save()
+            input.save()
+            return redirect("list-inputs")
+
         return redirect("list-inputs")
 
 
@@ -295,43 +308,46 @@ class SalableListView(View):
         )
 
     def post(self, request):
-        form = SalableForm(request.POST)
-        if form.is_valid():
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                edit_id = request.POST.get("edit_id")
-                if edit_id:
-                    salable = get_object_or_404(Salables, id=edit_id)
-                    form = SalableForm(request.POST, instance=salable)
+        if IsNotAdminToDocumentation().has_permission(request=request, view=None):
+            form = SalableForm(request.POST)
+            if form.is_valid():
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    edit_id = request.POST.get("edit_id")
+                    if edit_id:
+                        salable = get_object_or_404(Salables, id=edit_id)
+                        form = SalableForm(request.POST, instance=salable)
 
-                    if form.is_valid():
-                        form.save()
-                        return JsonResponse({"success": True})
+                        if form.is_valid():
+                            form.save()
+                            return JsonResponse({"success": True})
 
-                form.save()
-                return JsonResponse({"success": True})
+                    form.save()
+                    return JsonResponse({"success": True})
 
-        else:
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse(form.errors, status=400)
+            else:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(form.errors, status=400)
 
-        salable_id = request.POST.get("salable_id")
-        if salable_id:
-            salable = get_object_or_404(Salables, id=salable_id)
-            salable.is_active = not salable.is_active
+            salable_id = request.POST.get("salable_id")
+            if salable_id:
+                salable = get_object_or_404(Salables, id=salable_id)
+                salable.is_active = not salable.is_active
 
-        elif request.POST.get("salable_name"):
-            new_name = request.POST.get("salable_name")
-            salable_id = request.POST.get("salable_name_id")
-            salable = get_object_or_404(Salables, id=salable_id)
-            salable.name = new_name
+            elif request.POST.get("salable_name"):
+                new_name = request.POST.get("salable_name")
+                salable_id = request.POST.get("salable_name_id")
+                salable = get_object_or_404(Salables, id=salable_id)
+                salable.name = new_name
 
-        elif request.POST.get("salable_price"):
-            new_price = request.POST.get("salable_price")
-            salable_id = request.POST.get("salable_price_id")
-            salable = get_object_or_404(Salables, id=salable_id)
-            salable.price = new_price
+            elif request.POST.get("salable_price"):
+                new_price = request.POST.get("salable_price")
+                salable_id = request.POST.get("salable_price_id")
+                salable = get_object_or_404(Salables, id=salable_id)
+                salable.price = new_price
 
-        salable.save()
+            salable.save()
+            return redirect("list-salables")
+
         return redirect("list-salables")
 
 
@@ -375,46 +391,49 @@ class SalableCompositionDetailView(View):
         )
 
     def post(self, request):
-        salable_id = request.GET.get("salable_id")
-        form = SalablesCompositionForm(request.POST, salable_id=salable_id)
+        if IsNotAdminToDocumentation().has_permission(request=request, view=None):
+            salable_id = request.GET.get("salable_id")
+            form = SalablesCompositionForm(request.POST, salable_id=salable_id)
 
-        if form.is_valid():
+            if form.is_valid():
+                url = reverse("detail-composition") + f"?salable_id={salable_id}"
+
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    edit_id = request.POST.get("edit_id")
+                    if edit_id:
+                        salable = get_object_or_404(Salables, id=edit_id)
+                        form = SalableForm(request.POST, instance=salable)
+
+                        if form.is_valid():
+                            form.save()
+                            return JsonResponse({"success": True, "url": url})
+
+                    form.save()
+                    return JsonResponse({"success": True, "url": url})
+
+            else:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse(form.errors, status=400)
+
+            composition_quantity_id = request.POST.get("composition_quantity_id")
+            if composition_quantity_id:
+                composition = get_object_or_404(
+                    Salables_Compositions, id=composition_quantity_id
+                )
+                new_quantity = request.POST.get("composition_quantity")
+                composition.quantity = not new_quantity
+                salable_id = composition.salable.id
+                composition.save()
+
+            elif request.POST.get("composition_delete_id"):
+                composition_delete_id = request.POST.get("composition_delete_id")
+                composition = get_object_or_404(
+                    Salables_Compositions, id=composition_delete_id
+                )
+                salable_id = composition.salable.id
+                composition.delete()
+
             url = reverse("detail-composition") + f"?salable_id={salable_id}"
+            return redirect(url)
 
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                edit_id = request.POST.get("edit_id")
-                if edit_id:
-                    salable = get_object_or_404(Salables, id=edit_id)
-                    form = SalableForm(request.POST, instance=salable)
-
-                    if form.is_valid():
-                        form.save()
-                        return JsonResponse({"success": True, "url": url})
-
-                form.save()
-                return JsonResponse({"success": True, "url": url})
-
-        else:
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return JsonResponse(form.errors, status=400)
-
-        composition_quantity_id = request.POST.get("composition_quantity_id")
-        if composition_quantity_id:
-            composition = get_object_or_404(
-                Salables_Compositions, id=composition_quantity_id
-            )
-            new_quantity = request.POST.get("composition_quantity")
-            composition.quantity = not new_quantity
-            salable_id = composition.salable.id
-            composition.save()
-
-        elif request.POST.get("composition_delete_id"):
-            composition_delete_id = request.POST.get("composition_delete_id")
-            composition = get_object_or_404(
-                Salables_Compositions, id=composition_delete_id
-            )
-            salable_id = composition.salable.id
-            composition.delete()
-
-        url = reverse("detail-composition") + f"?salable_id={salable_id}"
         return redirect(url)
