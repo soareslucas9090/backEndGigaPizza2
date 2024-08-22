@@ -43,7 +43,6 @@ $(document).ready(function() {
     $('#createForm').on('submit', function(event) {
         event.preventDefault();
         $.ajax({
-            url: $(this).attr('action'),
             type: 'POST',
             data: $(this).serialize(),
             success: function(response) {

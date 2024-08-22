@@ -15,7 +15,7 @@
           </div>
         </div>
       </form>
-      <a href="{% url 'create-composition' %}?salable_id={{ salable.id }}" class="btn btn-primary" style="height: auto; width: auto; max-height: 60px;">Adicionar Insumo +</a>
+      <button type="button" data-bs-toggle="modal" data-bs-target="#createCompositionModal" data-create="true" class="btn btn-primary" style="height: auto; width: auto; max-height: 60px;">Adicionar Insumo +</button>
     </div>
     <table class="table table-bordered">
       <thead>
@@ -26,9 +26,6 @@
         </tr>
       </thead>
       <tbody>
-        {% block add_input_content %}
-
-        {% endblock %}
         {% for composition in compositions %}
           <tr>
             <td>{{ composition.input.name }} - {{ composition.input.unit }}</td>
@@ -51,4 +48,44 @@
       </tbody>
     </table>
   </div>
+
+  <div class="modal fade" id="createCompositionModal" tabindex="-1" aria-labelledby="createCompositionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 1050px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createCompositionModalLabel">Adicionar Composição</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="modal-errors" class="alert alert-danger d-none mx-3 mt-3"></div>
+        <div class="modal-body">
+          <form id="createForm" method="POST" action="#">
+            {% csrf_token %}
+            <table class="table table-bordered">
+              <thead>
+                <td>
+                  <b>Insumo</b>
+                </td>
+                <td>
+                  <b>Quantidade</b>
+                </td>
+              </thead>
+              <tbody>
+                <tr>
+                  {% load custom_tags %}
+                  <input type="hidden" name="{{ form.salable.name }}" value="{{ form.salable.initial }}" />
+                  <td>{{ form.input|add_class:'form-select' }}</td>
+                  <td>{{ form.quantity|add_class:'form-control' }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'admingigapizza/js/wild_form.js' %}"></script>
 {% endblock %}

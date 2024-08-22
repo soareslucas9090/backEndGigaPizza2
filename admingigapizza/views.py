@@ -278,6 +278,8 @@ class InputListView(View):
 @method_decorator(csrf_protect, name="dispatch")
 class SalableListView(View):
     def get(self, request):
+        form = SalableForm()
+
         query = request.GET.get("q", "")
         if query:
             salables = Salables.objects.filter(name__icontains=query).order_by("name")
@@ -288,11 +290,30 @@ class SalableListView(View):
             request,
             [
                 "menu_admin/registers/salables/list_salables.html",
-                {"salables": salables},
+                {"salables": salables, "form": form},
             ],
         )
 
     def post(self, request):
+        form = SalableForm(request.POST)
+        if form.is_valid():
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                edit_id = request.POST.get("edit_id")
+                if edit_id:
+                    salable = get_object_or_404(Salables, id=edit_id)
+                    form = SalableForm(request.POST, instance=salable)
+
+                    if form.is_valid():
+                        form.save()
+                        return JsonResponse({"success": True})
+
+                form.save()
+                return JsonResponse({"success": True})
+
+        else:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(form.errors, status=400)
+
         salable_id = request.POST.get("salable_id")
         if salable_id:
             salable = get_object_or_404(Salables, id=salable_id)
@@ -312,55 +333,6 @@ class SalableListView(View):
 
         salable.save()
         return redirect("list-salables")
-
-
-@method_decorator(csrf_protect, name="dispatch")
-class SalableCreateView(View):
-    def get(self, request):
-        edit_id = request.GET.get("edit_id")
-
-        if edit_id:
-            salable = get_object_or_404(Salables, id=edit_id)
-            form = SalableForm(instance=salable)
-        else:
-            form = SalableForm()
-
-        return isAdmin(
-            request,
-            [
-                "menu_admin/registers/salables/create_salable.html",
-                {"form": form},
-            ],
-        )
-
-    def post(self, request):
-        form = SalableForm(request.POST)
-        if form.is_valid():
-            edit_id = request.POST.get("edit_id")
-            if edit_id:
-                salable = get_object_or_404(Salables, id=edit_id)
-                form = SalableForm(request.POST, instance=salable)
-                if form.is_valid():
-                    form.save()
-                    return redirect("list-salables")
-
-            form.save()
-            return redirect("list-salables")
-
-        constraint_error = "Salables com este Name e Subcategory já existe"
-        errors = str(form.non_field_errors())
-
-        if constraint_error in errors:
-            form.errors.clear()
-            form.add_error(
-                None,
-                "Já existe um item p/ venda criado com este nome e esta subcategoria.",
-            )
-
-        return isAdmin(
-            request,
-            ["menu_admin/registers/salables/create_salable.html", {"form": form}],
-        )
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -387,6 +359,7 @@ class SalableCompositionListView(View):
 class SalableCompositionDetailView(View):
     def get(self, request):
         salable_id = request.GET.get("salable_id")
+        form = SalablesCompositionForm(salable_id=salable_id)
         compositions = Salables_Compositions.objects.filter(salable=salable_id)
 
         return isAdmin(
@@ -396,11 +369,35 @@ class SalableCompositionDetailView(View):
                 {
                     "compositions": compositions,
                     "salable": Salables.objects.get(id=salable_id),
+                    "form": form,
                 },
             ],
         )
 
     def post(self, request):
+        salable_id = request.GET.get("salable_id")
+        form = SalablesCompositionForm(request.POST, salable_id=salable_id)
+
+        if form.is_valid():
+            url = reverse("detail-composition") + f"?salable_id={salable_id}"
+
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                edit_id = request.POST.get("edit_id")
+                if edit_id:
+                    salable = get_object_or_404(Salables, id=edit_id)
+                    form = SalableForm(request.POST, instance=salable)
+
+                    if form.is_valid():
+                        form.save()
+                        return JsonResponse({"success": True, "url": url})
+
+                form.save()
+                return JsonResponse({"success": True, "url": url})
+
+        else:
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(form.errors, status=400)
+
         composition_quantity_id = request.POST.get("composition_quantity_id")
         if composition_quantity_id:
             composition = get_object_or_404(
@@ -421,46 +418,3 @@ class SalableCompositionDetailView(View):
 
         url = reverse("detail-composition") + f"?salable_id={salable_id}"
         return redirect(url)
-
-
-@method_decorator(csrf_protect, name="dispatch")
-class SalableCompositionCreateView(View):
-    def get(self, request):
-        salable_id = request.GET.get("salable_id")
-
-        form = SalablesCompositionForm(salable_id=salable_id)
-
-        return isAdmin(
-            request,
-            [
-                "menu_admin/registers/compositions/create_composition.html",
-                {"form": form, "salable": Salables.objects.get(id=salable_id)},
-            ],
-        )
-
-    def post(self, request):
-        salable_id = request.GET.get("salable_id")
-        form = SalablesCompositionForm(request.POST, salable_id=salable_id)
-
-        if form.is_valid():
-            form.save()
-            url = reverse("detail-composition") + f"?salable_id={salable_id}"
-            return redirect(url)
-
-        constraint_error = "Salables_ compositions com este Salable e Input já existe"
-        errors = str(form.non_field_errors())
-
-        if constraint_error in errors:
-            form.errors.clear()
-            form.add_error(
-                None,
-                "Insumo já adicionado na ficha técnica.",
-            )
-
-        return isAdmin(
-            request,
-            [
-                "menu_admin/registers/compositions/create_composition.html",
-                {"form": form, "salable": Salables.objects.get(id=salable_id)},
-            ],
-        )

@@ -7,10 +7,8 @@ from .views import (
     CustomLogoutView,
     InputListView,
     MenuAdminView,
-    SalableCompositionCreateView,
     SalableCompositionDetailView,
     SalableCompositionListView,
-    SalableCreateView,
     SalableListView,
     SubcategoryListView,
 )
@@ -52,11 +50,6 @@ urlpatterns = [
         SalableListView.as_view(),
         name="list-salables",
     ),
-    path(
-        "menu-admin/register/salables/new/",
-        SalableCreateView.as_view(),
-        name="create-salable",
-    ),
     # Compositions
     path(
         "menu-admin/register/compositions/",
@@ -67,10 +60,5 @@ urlpatterns = [
         "menu-admin/register/compositions/detail/",
         SalableCompositionDetailView.as_view(),
         name="detail-composition",
-    ),
-    path(
-        "menu-admin/register/compositions/new/",
-        SalableCompositionCreateView.as_view(),
-        name="create-composition",
     ),
 ]

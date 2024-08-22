@@ -15,7 +15,13 @@
         </div>
       </div>
     </form>
-    <a href="{% url "create-salable" %}" class="btn btn-primary" style="height: auto; width: auto; max-height: 60px;">Adicionar Item P/ Venda +</a>
+    <button
+      type="button" data-bs-toggle="modal"
+      data-bs-target="#createSalablesModal" data-create="true"
+      class="btn btn-primary"
+      style="height: auto; width: auto; max-height: 60px;">
+      Adicionar Item P/ Venda +
+    </button>
   </div>
   <table class="table table-bordered">
     <thead>
@@ -60,15 +66,80 @@
           </td>
         </form>
         <td>
-          <a href="{% url 'create-salable' %}?edit_id={{ salable.id }}" class="btn btn-secondary">Editar</a>
+          <a href="#" 
+            class="btn btn-secondary" 
+            data-bs-toggle="modal" 
+            data-bs-target="#createSalablesModal" 
+            data-edit="{{ salable.id }}"
+            data-name="{{ salable.name }}"
+            data-price="{{ salable.price }}"
+            data-description="{{ salable.description }}"
+            data-subcategory="{{ salable.subcategory.id }}">
+            Editar
+          </a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<div class="modal fade" id="createSalablesModal" tabindex="-1" aria-labelledby="createSalablesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 1050px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createSalablesModalLabel">Criar/Editar Item P/ Venda</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div id="modal-errors" class="alert alert-danger d-none mx-3 mt-3"></div>
+      <div class="modal-body">
+        <form id="createForm" method="POST" action="{% url 'list-salables' %}">
+          {% csrf_token %}
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Subcategoria</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <input type="hidden" name="edit_id" value="" />
+                {% load custom_tags %}
+                <td>{{ form.name|add_class:'form-control' }}</td>
+                <td class="size-CategTypePrice">
+                  <div class="input-group">
+                    <span class="input-group-text">R$</span>
+                    {{ form.price|add_class:'form-control' }}
+                  </div>
+                </td>
+                <td class="select-fk">{{ form.subcategory|add_class:'form-select' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ form.description|add_class:'form-control' }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
   <script src="{% static 'admingigapizza/js/form_input_price.js' %}"></script>
+  <script src="{% static 'admingigapizza/js/salable_form.js' %}"></script>
 {% endblock %}
