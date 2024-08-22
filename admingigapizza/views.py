@@ -178,6 +178,15 @@ class SubcategoryListView(View):
 
         if form.is_valid():
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                edit_id = request.POST.get("edit_id")
+                if edit_id:
+                    subcategory = get_object_or_404(SubCategories, id=edit_id)
+                    form = SubCategoryForm(request.POST, instance=subcategory)
+
+                    if form.is_valid():
+                        form.save()
+                        return JsonResponse({"success": True})
+
                 form.save()
                 return JsonResponse({"success": True})
 
@@ -198,47 +207,6 @@ class SubcategoryListView(View):
 
         subcategory.save()
         return redirect("list-subcategories")
-
-
-@method_decorator(csrf_protect, name="dispatch")
-class SubcategoryCreateView(View):
-    def get(self, request):
-        edit_id = request.GET.get("edit_id")
-
-        subcategory = get_object_or_404(SubCategories, id=edit_id)
-        form = SubCategoryForm(
-            instance=subcategory, category_type=subcategory.category.type
-        )
-
-        return isAdmin(
-            request,
-            [
-                "menu_admin/registers/subcategories/edit_subcategory.html",
-                {"form": form},
-            ],
-        )
-
-    def post(self, request):
-        form = SubCategoryForm(request.POST)
-        if form.is_valid():
-            edit_id = request.POST.get("edit_id")
-            if edit_id:
-                subcategory = get_object_or_404(SubCategories, id=edit_id)
-                form = SubCategoryForm(request.POST, instance=subcategory)
-                if form.is_valid():
-                    form.save()
-                    return redirect("list-subcategories")
-
-            form.save()
-            return redirect("list-subcategories")
-
-        return isAdmin(
-            request,
-            [
-                "menu_admin/registers/subcategories/edit_subcategory.html",
-                {"form": form},
-            ],
-        )
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -264,6 +232,15 @@ class InputListView(View):
         form = InputForm(request.POST)
         if form.is_valid():
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                edit_id = request.POST.get("edit_id")
+                if edit_id:
+                    input = get_object_or_404(Inputs, id=edit_id)
+                    form = InputForm(request.POST, instance=input)
+
+                    if form.is_valid():
+                        form.save()
+                        return JsonResponse({"success": True})
+
                 form.save()
                 return JsonResponse({"success": True})
 
@@ -296,54 +273,6 @@ class InputListView(View):
 
         input.save()
         return redirect("list-inputs")
-
-
-@method_decorator(csrf_protect, name="dispatch")
-class InputCreateView(View):
-    def get(self, request):
-        edit_id = request.GET.get("edit_id")
-
-        if edit_id:
-            input = get_object_or_404(Inputs, id=edit_id)
-            form = InputForm(instance=input)
-        else:
-            form = InputForm()
-
-        return isAdmin(
-            request,
-            [
-                "menu_admin/registers/inputs/create_input.html",
-                {"form": form},
-            ],
-        )
-
-    def post(self, request):
-        form = InputForm(request.POST)
-        if form.is_valid():
-            edit_id = request.POST.get("edit_id")
-            if edit_id:
-                input = get_object_or_404(Inputs, id=edit_id)
-                form = InputForm(request.POST, instance=input)
-                if form.is_valid():
-                    form.save()
-                    return redirect("list-inputs")
-
-            form.save()
-            return redirect("list-inputs")
-
-        constraint_error = "Inputs com este Name e Subcategory já existe"
-        errors = str(form.non_field_errors())
-
-        if constraint_error in errors:
-            form.errors.clear()
-            form.add_error(
-                None, "Já existe um insumo criado com este nome e esta subcategoria."
-            )
-
-        return isAdmin(
-            request,
-            ["menu_admin/registers/inputs/create_input.html", {"form": form}],
-        )
 
 
 @method_decorator(csrf_protect, name="dispatch")

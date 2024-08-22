@@ -5,7 +5,6 @@ from .views import (
     CategoryTypeListView,
     CustomLoginView,
     CustomLogoutView,
-    InputCreateView,
     InputListView,
     MenuAdminView,
     SalableCompositionCreateView,
@@ -13,7 +12,6 @@ from .views import (
     SalableCompositionListView,
     SalableCreateView,
     SalableListView,
-    SubcategoryCreateView,
     SubcategoryListView,
 )
 
@@ -42,21 +40,11 @@ urlpatterns = [
         SubcategoryListView.as_view(),
         name="list-subcategories",
     ),
-    path(
-        "menu-admin/register/subcategories/new/",
-        SubcategoryCreateView.as_view(),
-        name="create-subcategory",
-    ),
     # Inputs
     path(
         "menu-admin/register/inputs/",
         InputListView.as_view(),
         name="list-inputs",
-    ),
-    path(
-        "menu-admin/register/inputs/new/",
-        InputCreateView.as_view(),
-        name="create-input",
     ),
     # Salables
     path(

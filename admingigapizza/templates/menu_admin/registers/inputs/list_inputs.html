@@ -15,8 +15,13 @@
         </div>
       </div>
     </form>
-    <button type="button" data-bs-toggle="modal" data-bs-target="#createInputsModal" class="btn btn-primary"
-      style="height: auto; width: auto; max-height: 60px;">Adicionar Insumo +</button>
+    <button
+      type="button" data-bs-toggle="modal"
+      data-bs-target="#createInputsModal" data-create="true"
+      class="btn btn-primary"
+      style="height: auto; width: auto; max-height: 60px;">
+      Adicionar Insumo +
+    </button>
   </div>
   <table class="table table-bordered">
     <thead>
@@ -67,7 +72,18 @@
           </td>
         </form>
         <td>
-          <a href="{% url 'create-input' %}?edit_id={{ input.id }}" class="btn btn-secondary">Editar</a>
+          <a href="#" 
+            class="btn btn-secondary" 
+            data-bs-toggle="modal" 
+            data-bs-target="#createInputsModal" 
+            data-edit="{{ input.id }}"
+            data-price="{{ input.price }}"
+            data-name="{{ input.name }}"
+            data-quantity="{{ input.quantity }}"
+            data-unit="{{ input.unit }}"
+            data-subcategory="{{ input.subcategory.id }}">
+            Editar
+          </a>
         </td>
       </tr>
       {% endfor %}
@@ -98,6 +114,7 @@
             </thead>
             <tbody>
               <tr>
+                <input type="hidden" name="edit_id" value="" />
                 {% load custom_tags %}
                 <td>{{ form.name|add_class:'form-control' }}</td>
                 <td class="size-CategTypePrice">
@@ -122,5 +139,5 @@
 
 {% block extra_js %}
   <script src="{% static 'admingigapizza/js/form_input_price.js' %}"></script>
-  <script src="{% static 'admingigapizza/js/create_form.js' %}"></script>
+  <script src="{% static 'admingigapizza/js/input_form.js' %}"></script>
 {% endblock %}

@@ -15,8 +15,13 @@
         </div>
       </div>
     </form>
-    <button type="button" data-bs-toggle="modal" data-bs-target="#createSubCategoryModal" class="btn btn-primary"
-      style="height: auto; width: auto; max-height: 60px;">Adicionar Subcategoria +</button>
+    <button
+      type="button" data-bs-toggle="modal"
+      data-bs-target="#createSubCategoryModal" data-create="true"
+      class="btn btn-primary"
+      style="height: auto; width: auto; max-height: 60px;">
+      Adicionar Subcategoria +
+    </button>
   </div>
   <table class="table table-bordered">
     <thead>
@@ -48,7 +53,15 @@
           </td>
         </form>
         <td>
-          <a href="{% url 'create-subcategory' %}?edit_id={{ subcategory.id }}" class="btn btn-secondary">Editar</a>
+          <a href="#" 
+            class="btn btn-secondary" 
+            data-bs-toggle="modal" 
+            data-bs-target="#createSubCategoryModal" 
+            data-edit="{{ subcategory.id }}"
+            data-name="{{ subcategory.name }}"
+            data-category="{{ subcategory.category.id }}">
+            Editar
+          </a>
         </td>
       </tr>
       {% endfor %}
@@ -60,7 +73,7 @@
   <div class="modal-dialog modal-dialog-centered" style="max-width: 700px;">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="createSubCategoryModalLabel">Criar Subcategoria</h5>
+        <h5 class="modal-title" id="createSubCategoryModalLabel">Criar/Editar Subcategoria</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div id="modal-errors" class="alert alert-danger d-none mx-3 mt-3"></div>
@@ -76,9 +89,7 @@
             </thead>
             <tbody>
               <tr>
-                {% if form.instance.id %}
-                  <input type="hidden" name="edit_id" value="{{ form.instance.id }}" />
-                {% endif %}
+                <input type="hidden" name="edit_id" value="" />
                 {% load custom_tags %}
                 <td>{{ form.name|add_class:'form-control' }}</td>
                 <td>{{ form.category|add_class:'form-select' }}</td>
@@ -94,5 +105,5 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'admingigapizza/js/create_form.js' %}"></script>
+  <script src="{% static 'admingigapizza/js/subcategory_form.js' %}"></script>
 {% endblock %}
